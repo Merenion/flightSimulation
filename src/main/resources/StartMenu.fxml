@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="forma" prefHeight="277.0" prefWidth="215.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.Controllers.StartMenu">
+  <children>
+    <Button layoutX="14.0" layoutY="21.0" mnemonicParsing="false" onAction="#onBtProgram1" prefHeight="39.0" prefWidth="122.0" text="Имитация полета">
+      <effect>
+        <Lighting diffuseConstant="2.0" specularConstant="0.0" specularExponent="25.07936507936508" surfaceScale="0.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant color="#33ffb6" />
+          </light>
+        </Lighting>
+      </effect>
+    </Button>
+    <Button layoutX="14.0" layoutY="73.0" mnemonicParsing="false" onAction="#onBtProgram2" prefHeight="39.0" prefWidth="122.0" text="Program2" />
+    <Button layoutX="16.0" layoutY="126.0" mnemonicParsing="false" onAction="#onBtProgram3" prefHeight="39.0" prefWidth="120.0" text="Program3" />
+    <Button layoutX="15.0" layoutY="233.0" minHeight="19.0" mnemonicParsing="false" onAction="#onBtAboutTheProgram" prefHeight="25.0" prefWidth="186.0" text="О программе" />
+    <Button layoutX="15.0" layoutY="180.0" mnemonicParsing="false" onAction="#onBtHelp" prefHeight="39.0" prefWidth="120.0" text="Помощь" />
+    <ImageView id="images.png" fitHeight="58.999908447265625" fitWidth="65.0" layoutX="143.0" layoutY="11.0">
+      <image>
+        <Image url="file:src/main/resources/image/imagesProgram1.png" preserveRatio="true" smooth="true" />
+      </image>
+    </ImageView>
+  </children>
+</AnchorPane>

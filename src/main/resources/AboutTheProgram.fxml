@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane disable="false" prefHeight="443.0" prefWidth="695.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.Controllers.AboutTheProgram">
+  <children>
+    <TextArea fx:id="textArea" disable="false" editable="false" layoutX="14.0" layoutY="14.0" prefHeight="380.0" prefWidth="668.0" wrapText="true" />
+    <Button layoutX="559.0" layoutY="403.0" mnemonicParsing="false" onAction="#onBtClose" prefHeight="26.0" prefWidth="122.0" text="Выход" />
+  </children>
+</AnchorPane>
