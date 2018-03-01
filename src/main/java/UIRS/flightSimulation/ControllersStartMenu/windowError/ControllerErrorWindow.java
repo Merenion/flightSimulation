@@ -1,4 +1,4 @@
-package UIRS.flightSimulation.Controllers.windowError;
+package UIRS.flightSimulation.ControllersStartMenu.windowError;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

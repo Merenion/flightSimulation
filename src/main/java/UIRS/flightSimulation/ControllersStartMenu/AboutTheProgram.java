@@ -1,4 +1,4 @@
-package UIRS.flightSimulation.Controllers;
+package UIRS.flightSimulation.ControllersStartMenu;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

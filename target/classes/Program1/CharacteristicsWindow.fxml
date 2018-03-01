@@ -5,22 +5,48 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.Controllers.program1.CharacteristicsWindow">
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.program1.Controllers.CharacteristicsWindow">
   <children>
-    <TabPane layoutX="0.0" layoutY="0.0" prefHeight="551.0" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE">
+    <TabPane layoutX="0.0" layoutY="0.0" prefHeight="527.0" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
-        <Tab text="Untitled Tab 1">
+        <Tab text="Параметры орбиты">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="514.0" prefWidth="986.0" />
-          </content>
-        </Tab>
-        <Tab text="Untitled Tab 2">
-          <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="446.0" prefWidth="1000.0">
+              <children>
+                <TextField fx:id="lbHightPerigei" layoutX="43.0" layoutY="46.0" prefWidth="59.0" text="729" />
+                <TextField fx:id="lbAngleNaclonOrbit" layoutX="43.0" layoutY="113.0" prefWidth="59.0" text="98.3" />
+                <TextField fx:id="lbHightApogei" layoutX="43.0" layoutY="78.0" prefWidth="59.0" text="729" />
+                <TextField id="lb" fx:id="lbDolgotaVoshodUthla" layoutX="43.0" layoutY="142.0" prefWidth="59.0" text="0" />
+                <TextField fx:id="lbBeginArgumentPerigeya" layoutX="43.0" layoutY="175.0" prefWidth="59.0" text="0" />
+                <Label layoutX="109.0" layoutY="49.0" text="Высота перигея орбиты, км" />
+                <Label layoutX="109.0" layoutY="82.0" text="Высота апогея орбиты, км" />
+                <Label layoutX="109.0" layoutY="113.0" text="Угол наклона плоскости орбиты, град" />
+                <Label layoutX="109.0" layoutY="145.0" text="Долгота восходящего узла,град" />
+                <Label layoutX="109.0" layoutY="178.0" text="Начальный аргумент перигея, град" />
+                <RadioButton id="radioButtonOrbit" fx:id="radioButtonCircleOrbit" layoutX="40.0" layoutY="216.0" mnemonicParsing="false" selected="true" text="Круговая орбита">
+                  <toggleGroup>
+                    <ToggleGroup fx:id="tgOrbit" />
+                  </toggleGroup>
+                </RadioButton>
+                <RadioButton layoutX="182.0" layoutY="216.0" mnemonicParsing="false" selected="false" text="Элиптическая орбита" toggleGroup="$tgOrbit" />
+              </children>
+            </AnchorPane>
           </content>
         </Tab>
       </tabs>
     </TabPane>
+    <AnchorPane layoutX="0.0" layoutY="527.0" prefHeight="73.0" prefWidth="1000.0">
+      <children>
+        <TextField fx:id="lbStartTIme" layoutX="31.0" layoutY="26.0" prefWidth="71.0" text="0" />
+        <Label layoutX="122.0" layoutY="29.0" text="Начальное время, с" />
+        <Button layoutX="445.0" layoutY="18.0" mnemonicParsing="false" onAction="#onStart" prefHeight="41.0" prefWidth="111.0" text="Ок">
+          <font>
+            <Font name="System Bold" size="14.0" />
+          </font>
+        </Button>
+      </children>
+    </AnchorPane>
   </children>
 </AnchorPane>

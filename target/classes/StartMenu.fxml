@@ -8,7 +8,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="forma" prefHeight="277.0" prefWidth="215.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.Controllers.StartMenu">
+<AnchorPane fx:id="forma" prefHeight="277.0" prefWidth="215.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.ControllersStartMenu.StartMenu">
   <children>
     <Button layoutX="14.0" layoutY="21.0" mnemonicParsing="false" onAction="#onBtProgram1" prefHeight="39.0" prefWidth="122.0" text="Имитация полета">
       <effect>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.program1.Controllers.SimulationFlight">
+  <children>
+    <ImageView id="KartaZifr2.png" fitHeight="456.0" fitWidth="900.0" layoutX="50.0" layoutY="63.0">
+      <image>
+        <Image url="@../image/KartaZifr2.png" preserveRatio="true" smooth="true" />
+      </image>
+    </ImageView>
+    <Pane layoutX="50.0" layoutY="63.0" prefHeight="456.0" prefWidth="900.0" />
+  </children>
+</AnchorPane>

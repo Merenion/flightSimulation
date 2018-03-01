@@ -1,4 +1,4 @@
-package UIRS.flightSimulation.Controllers;
+package UIRS.flightSimulation.ControllersStartMenu;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,15 +22,17 @@ public class StartMenu {
     }
 
     public void onBtProgram1(ActionEvent actionEvent) throws IOException {
-        System.out.println("action bt info project");
+        System.out.println("action bt open program 1");
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("/Program1/CharacteristicsWindow.fxml"));
         Parent root = fxmlLoader.load();
         Stage stage= new Stage();
-        stage.setTitle("Имитация");
+        stage.setTitle("Характеристики");
         stage.setResizable(false);
         Scene scene = new Scene(root, 1000, 600);
         stage.setScene(scene);
+        Stage stageThis = (Stage) forma.getScene().getWindow();
+        stageThis.close();
         stage.show();
     }
 
