@@ -13,11 +13,7 @@ public class Main extends Application{
     private static MathModel mathModel = new MathModel();
 
     public static void main(String[] args) {
-        mathModel.setTestData();
-        for (int t=0; t<8000;t++) {
-            System.out.println("_____#" + t);
-            System.out.println(mathModel.flyModel(t));
-        }
+        mathModel.startTest();
         launch(args);
     }
 

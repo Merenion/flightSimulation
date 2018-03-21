@@ -1,10 +1,12 @@
 package UIRS.flightSimulation.program1;
 
+import java.util.logging.Logger;
+
 public class MathModel {
     private static final int Rz = 6371; //радиус Земли
     private static final int mu = 398602; //гравитационный параметр Земли
     private static final double w = 0.0000729211; //угловая скорость вращения Земли
-
+    private static Logger log = Logger.getGlobal();
 
     // входные переменные
     private double i;
@@ -13,15 +15,27 @@ public class MathModel {
     private double Hpi;
     private double Ha;
     private double t0;
-    public void setTestData (){
-        i=98.3;
-        omega0=1;
-        w0=1;
-        Hpi=729;
-        Ha=729;
-        t0=0;
+
+    public void setTestData() {
+        i = 98.3;
+        omega0 = 1;
+        w0 = 1;
+        Hpi = 729;
+        Ha = 729;
+        t0 = 0;
     }
 
+    public Coordinate startTest () {
+        setTestData();
+        for (int i=1 ; i<1000; i++) {
+            Coordinate coordinate1 = new Coordinate();
+            coordinate1 = flyModel(i);
+            CordinateSinCos coordinate2 = conversionRelativeToThePlaneInSinCos(coordinate1);
+            Coordinate coordinate3 = endCoordinatePlane(coordinate2);
+            System.out.println(coordinate3+"\n_____________________");
+        }
+        return  null;
+    }
 
     //другие переменные
     private double tau = 0;
@@ -36,7 +50,7 @@ public class MathModel {
      * t0 - начальное время
      * orbit - тип орбиты (true - круговая, else - элиптическая)
      */
-    public RelativeCoordinateSystem flyModel(float t) {
+    public Coordinate flyModel(float t) {
         double rpi, ra, e, a, Tzv, p, dOmega, omega, dw, W, n, dt_sr, t_zv, M, E0, M1, dE, cosTetaSmall,
                 tetaSmall, r, u, sinFi, fiGa, sinlambda, lambdaGa, fi, lambda;
 
@@ -78,33 +92,46 @@ public class MathModel {
         lambdaGa = Math.asin(sinlambda);
         fi = fiGa;
         lambda = lambdaGa - w * t - dOmega * t / Tzv;
-        System.out.println("fi="+fi+"\n"+"lambda="+lambda);
-        return new RelativeCoordinateSystem(fi,lambda);
+//        log.info("fi=" + fi + "\n" + "lambda=" + lambda);
+        return new Coordinate(fi, lambda);
     }
 
-    public PlaneCoordinateSystem conversionRelativeToThePlane (RelativeCoordinateSystem rcs){
-        return new PlaneCoordinateSystem(Math.asin(Math.sin(rcs.fi)),
-                Math.asin((Math.sin(rcs.lamda)*Math.cos(rcs.fi))/Math.cos(Math.asin(Math.sin(rcs.fi)))));
+    /**
+     * перевод координат на координаты плоскости
+     */
+    public CordinateSinCos conversionRelativeToThePlaneInSinCos(Coordinate coordinate) {
+        return new CordinateSinCos(Math.sin(coordinate.getFi()),
+                (Math.sin(coordinate.getLambda()) * Math.cos(coordinate.getFi()))
+                        / Math.cos(Math.asin(Math.sin(coordinate.getFi()))), (Math.cos(coordinate.getFi()) *
+                Math.cos(coordinate.getLambda()))
+                / Math.cos(Math.asin(Math.sin(coordinate.getFi()))));
     }
 
-    /**относительная система координат*/
-    class RelativeCoordinateSystem {
-        private double fi = 0;
-        private double lamda = 0;
-        RelativeCoordinateSystem(double fi, double lamda) {
-            this.fi = fi;
-            this.lamda = lamda;
-        }
+    private Coordinate endCoordinatePlane(CordinateSinCos csc) {
+        Coordinate coordinate = new Coordinate();
+//        log.info("sinFi=" + csc.sinFi + "\n" + "sinLambda=" + csc.sinlambda+ "\n" + "cosLambda=" + csc.coslambda);
+        if (csc.sinlambda>0 && csc.coslambda>0)
+            coordinate.setLambda(Math.asin(csc.sinlambda));
+        if (csc.sinlambda>0 && csc.coslambda<0)
+            coordinate.setLambda(180-Math.asin(csc.sinlambda));
+        if (csc.sinlambda<0 && csc.coslambda<0)
+            coordinate.setLambda(180-Math.asin(csc.sinlambda));
+        if (csc.sinlambda<0 && csc.coslambda>0)
+            coordinate.setLambda(Math.asin(csc.sinlambda));
+        coordinate.setFi(Math.asin(csc.sinFi));
+//        log.info(coordinate.toString());
+        return coordinate;
     }
 
+    class CordinateSinCos {
+        private double sinFi;
+        private double sinlambda;
+        private double coslambda;
 
-    /**система координат для 2D лоскости*/
-    class PlaneCoordinateSystem {
-        private double fi = 0;
-        private double lamda = 0;
-        PlaneCoordinateSystem(double fi, double lamda) {
-            this.fi = fi;
-            this.lamda = lamda;
+        CordinateSinCos(double sinFi, double sinlambda, double coslambda) {
+            this.sinFi = sinFi;
+            this.sinlambda = sinlambda;
+            this.coslambda = coslambda;
         }
     }
 }
