@@ -43,13 +43,8 @@ public class CharacteristicsWindow {
     public void onStart(ActionEvent actionEvent) {
         System.out.println("on Button Start");
                 mathModel.flyModel(
-                        Float.parseFloat(lbAngleNaclonOrbit.getText()),
-                        Float.parseFloat(lbDolgotaVoshodUthla.getText()),
-                        Float.parseFloat(lbBeginArgumentPerigeya.getText()),
-                        Float.parseFloat(lbHightPerigei.getText()),
-                        Float.parseFloat(lbHightApogei.getText()),
-                        Float.parseFloat(lbStartTIme.getText()),
-                        radioButtonCircleOrbit.isSelected());
+                        Float.parseFloat(lbAngleNaclonOrbit.getText())
+                );
         try {
             openWindowSimulationFlight();
         } catch (IOException e) {

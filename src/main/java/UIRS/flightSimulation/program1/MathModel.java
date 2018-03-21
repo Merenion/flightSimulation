@@ -5,7 +5,6 @@ public class MathModel {
     private static final int mu = 398602; //гравитационный параметр Земли
     private static final double w = 0.0000729211; //угловая скорость вращения Земли
 
-    private static float dt = 0; //шаг расчета по времени
 
     // входные переменные
     private double i;
@@ -14,9 +13,19 @@ public class MathModel {
     private double Hpi;
     private double Ha;
     private double t0;
+    public void setTestData (){
+        i=98.3;
+        omega0=1;
+        w0=1;
+        Hpi=729;
+        Ha=729;
+        t0=0;
+    }
+
 
     //другие переменные
     private double tau = 0;
+    private static float dt = 1; //шаг расчета по времени
 
     /**
      * i - угол наклона плоскости орбиты
@@ -27,7 +36,7 @@ public class MathModel {
      * t0 - начальное время
      * orbit - тип орбиты (true - круговая, else - элиптическая)
      */
-    public void flyModel(float t) {
+    public RelativeCoordinateSystem flyModel(float t) {
         double rpi, ra, e, a, Tzv, p, dOmega, omega, dw, W, n, dt_sr, t_zv, M, E0, M1, dE, cosTetaSmall,
                 tetaSmall, r, u, sinFi, fiGa, sinlambda, lambdaGa, fi, lambda;
 
@@ -69,26 +78,32 @@ public class MathModel {
         lambdaGa = Math.asin(sinlambda);
         fi = fiGa;
         lambda = lambdaGa - w * t - dOmega * t / Tzv;
+        System.out.println("fi="+fi+"\n"+"lambda="+lambda);
+        return new RelativeCoordinateSystem(fi,lambda);
     }
 
-    //относительная система координат
+    public PlaneCoordinateSystem conversionRelativeToThePlane (RelativeCoordinateSystem rcs){
+        return new PlaneCoordinateSystem(Math.asin(Math.sin(rcs.fi)),
+                Math.asin((Math.sin(rcs.lamda)*Math.cos(rcs.fi))/Math.cos(Math.asin(Math.sin(rcs.fi)))));
+    }
+
+    /**относительная система координат*/
     class RelativeCoordinateSystem {
         private double fi = 0;
         private double lamda = 0;
-
-        public double getFi() {
-            return fi;
-        }
-
-        public void setFi(double fi) {
+        RelativeCoordinateSystem(double fi, double lamda) {
             this.fi = fi;
+            this.lamda = lamda;
         }
+    }
 
-        public double getLamda() {
-            return lamda;
-        }
 
-        public void setLamda(double lamda) {
+    /**система координат для 2D лоскости*/
+    class PlaneCoordinateSystem {
+        private double fi = 0;
+        private double lamda = 0;
+        PlaneCoordinateSystem(double fi, double lamda) {
+            this.fi = fi;
             this.lamda = lamda;
         }
     }
