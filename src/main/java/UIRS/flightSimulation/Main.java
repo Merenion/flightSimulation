@@ -10,10 +10,8 @@ import javafx.stage.Stage;
 
 public class Main extends Application{
 
-    private static MathModel mathModel = new MathModel();
 
     public static void main(String[] args) {
-        mathModel.startTest();
         launch(args);
     }
 

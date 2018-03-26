@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class CharacteristicsWindow {
-    private static MathModel mathModel = new MathModel();
+    private static MathModel mathModel = new MathModel(450,228,2.7,2.7);
 
     public static MathModel getMathModel() {
         return mathModel;

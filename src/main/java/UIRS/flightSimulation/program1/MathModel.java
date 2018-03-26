@@ -3,18 +3,71 @@ package UIRS.flightSimulation.program1;
 import java.util.logging.Logger;
 
 public class MathModel {
-    private static final int Rz = 6371; //радиус Земли
-    private static final int mu = 398602; //гравитационный параметр Земли
-    private static final double w = 0.0000729211; //угловая скорость вращения Земли
     private static Logger log = Logger.getGlobal();
 
+    public MathModel(double x0i, double y0i, double mX, double mY) {
+        this.x0i = x0i;
+        this.y0i = y0i;
+        this.mX = mX;
+        this.mY = mY;
+    }
+
+    //константы
+    private static final int Rz = 6371; //радиус Земли
+    private static final int mu = 398602; //гравитационный параметр Земли
+    private static final double omegaZemli = 0.0000729211; //угловая скорость вращения Земли
+    private static final double omegaSolnca = 0.000000199106; //угловая скорость вращения Солнца
+
+    //координаты центра и массштаю
+    private double x0i;     //центр по X
+    private double y0i;     //центр по Y
+    private double mX;      //массштаб по X
+    private double mY;      //массштаб по Y
+
     // входные переменные
-    private double i;
-    private double omega0;
-    private double w0;
-    private double Hpi;
-    private double Ha;
-    private double t0;
+    private double i;       //угол наклона плоскости орбиты
+    private double omega0;  //долгота восходящего узла орбиты
+    private double w0;      //начальный аргучент перигея орбиты
+    private double Hpi;     //высота перигея орбиты
+    private double Ha;      //высота апогея орбиты
+    private double t0;      //начальное время
+
+    //начальные параметры орбиты
+    private double rpi;             //радиус перигея
+    private double ra;              //радиус апогея
+    private double e;               //Эксцентриситет орбиты
+    private double a;               //Большая полурсь
+    private double p;
+    private double r;
+    private double H;               //Высота полета
+    private double Tzv;             //Период обращения звездный
+    private double dOmega;
+    private double dw;
+
+    //переменные орбиты в полете
+    private double omega;           //Текущий угол восходящего узла орбиты, рад
+    private double dt_sr;
+    private double W;
+    private double n;
+    private double t_zv;
+    private double tetaSmall;
+    private double M;
+    private double M1;
+    private double dE;
+    private double cosTetaSmall;
+    private double sinTetaSmall;
+    private double u;
+    private double sinFi;
+    private double cosFi;
+    private double sinlambda;
+    private double coslambda;
+    private double fi;
+    private double fiGa;
+    private double lambdaGa;
+    private double lambda;
+    private double x;
+    private double y;
+
 
     public void setTestData() {
         i = 98.3;
@@ -25,53 +78,38 @@ public class MathModel {
         t0 = 0;
     }
 
-    public Coordinate startTest () {
-        setTestData();
-        for (int i=1 ; i<1000; i++) {
-            Coordinate coordinate1 = new Coordinate();
-            coordinate1 = flyModel(i);
-            CordinateSinCos coordinate2 = conversionRelativeToThePlaneInSinCos(coordinate1);
-            Coordinate coordinate3 = endCoordinatePlane(coordinate2);
-            System.out.println(coordinate3+"\n_____________________");
-        }
-        return  null;
-    }
 
     //другие переменные
     private double tau = 0;
     private static float dt = 1; //шаг расчета по времени
 
-    /**
-     * i - угол наклона плоскости орбиты
-     * barrel0 - долгота восходящего узла орбиты                                                                            !!
-     * w0 - начальный аргучент перигея орбиты
-     * Hpi - высота перигея орбиты
-     * Ha - высота апогея орбиты
-     * t0 - начальное время
-     * orbit - тип орбиты (true - круговая, else - элиптическая)
-     */
-    public Coordinate flyModel(float t) {
-        double rpi, ra, e, a, Tzv, p, dOmega, omega, dw, W, n, dt_sr, t_zv, M, E0, M1, dE, cosTetaSmall,
-                tetaSmall, r, u, sinFi, fiGa, sinlambda, lambdaGa, fi, lambda;
 
+    public void rashetPorb() {  //Расчет начальных параметров орбиты
+        i =i * Math.PI/180;
+        omega0 = omega0*Math.PI/180;
+        w0 = w0*Math.PI/180;
         rpi = Rz + Hpi;                                           //радиус перигея
         ra = Rz + Ha;                                             //радиус апогея
         e = (ra - rpi) / (ra + rpi);                              //Эксцентриситет орбиты
         a = (rpi + ra) / 2;                                       //Большая полурсь
-        Tzv = 2 * Math.PI * Math.sqrt(Math.pow(a, 3) / mu);         //Период обращения звездный
+        r = a * (1 - e * e);                                            //Расчет фокального параметра орбиты
+        H = r - Rz;
         p = a * (1 - Math.pow(e, 2));
+        Tzv = 2 * Math.PI * Math.sqrt(Math.pow(a, 3) / mu);         //Период обращения звездный
         //Расчет векового возмущения первого порядка:
         dOmega = -35.052 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * Math.cos(i);
-        omega = omega0 + t / Tzv * dOmega;                    //Текущий угол восходящего узла орбиты, рад
         //Расчет векового возмущения аргумента перигея орбиты первого порядка:
         dw = -17.525 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * (1 - 5 * Math.pow(Math.cos(i), 2));
-        W = w0 * Math.PI / 180 + t / Tzv * dw;
+    }
+
+    public Coordinate flyModel(float t) {
+        rashetPorb();
+        omega = omega0+ t / Tzv * dOmega;                    //Текущий угол восходящего узла орбиты, рад
+        W = w0  + t / Tzv * dw;
         n = Math.sqrt(mu / Math.pow(a, 3));                        //Определение среднего движения
-        dt_sr = t - tau;                                           //Определение промежутка среднего времени с момента
-        //прохождения перигея до момента наблюдения
+        dt_sr = t - tau;                                           //Определение промежутка среднего времени с момента прохождения перигея до момента наблюдения
         t_zv = 1.00273791 * dt_sr;                                 //Определение звездного времени
         M = t_zv * n;                                              //Определение средней аномалии
-
         double E01 = M + e * Math.sin(M) + (e * e / 2) * Math.sin(2 * M);        //Первый член разложения уравнения Кеплера (E-e*sin(E)=M
         double E02 = e * e * e / 24 * (9 * Math.sin(3 * M) - 3 * Math.sin(M)); //Второй член разложения и т.д.
         double E03 = Math.pow(Math.E, 4) / (24 * 8) * (64 * Math.sin(4 * M) - 32 * Math.sin(2 * M));
@@ -79,21 +117,43 @@ public class MathModel {
         double E05 = Math.pow(Math.E, 5) / (720 * 32) * (36 * 36 * 6 * Math.sin(6 * M) - 6 * 256 * 4 * Math.sin(4 * M) + 15 * 32 * Math.sin(2 * M));
         double Ea = E01 + E02 + E03 + E04 + E05;                           //Эксцентрическая аномалия
         double Ea0 = Ea - 2 * Math.PI * ((int) (Ea / (2 * Math.PI)));         //Эксцентрическая аномалия приведенная к одному витку
-        M1 = Ea - e * Math.sin(Ea);
-        dE = (M - M1) / (1 - e * Math.cos(Ea));
-        double E = Ea + dE; //для Е нужен цикл, для заданной точности                                                              !!
-        cosTetaSmall = (Math.cos(E) - e) / (1 - e * Math.cos(E));
-        tetaSmall = Math.acos(cosTetaSmall);
-        r = a * (1 - e * Math.cos(E));
-        u = w + tetaSmall;
+        cosTetaSmall = (Math.cos(Ea) - e) / (1 - e * Math.cos(Ea));
+        sinTetaSmall = Math.sqrt(1-e*e)*Math.sin(Ea)/(1-e*Math.cos(Ea));
+        tetaSmall = Math.asin(sinTetaSmall);
+        if (sinTetaSmall>0 && cosTetaSmall<0) tetaSmall=tetaSmall+Math.PI;
+        if (sinTetaSmall<0 && cosTetaSmall<0) tetaSmall=Math.PI-tetaSmall;
+        if (sinTetaSmall<0 && cosTetaSmall>0) tetaSmall=2*Math.PI-tetaSmall;
+
+
+        //r = a * (1 - e * Math.cos(E));
+        u = W + tetaSmall;
         sinFi = Math.sin(i) * Math.sin(u);
-        fiGa = Math.asin(sinFi);
+        cosFi = Math.sqrt(1-sinFi*sinFi);
         sinlambda = (Math.sin(omega) * Math.cos(u) + Math.cos(omega) * Math.cos(i) * Math.sin(u)) / Math.cos(fiGa);
-        lambdaGa = Math.asin(sinlambda);
-        fi = fiGa;
-        lambda = lambdaGa - w * t - dOmega * t / Tzv;
+        coslambda = (Math.cos(omega) * Math.cos(u) - Math.sin(omega) * Math.cos(i) * Math.sin(u)) / Math.cos(fiGa);
+        fi = Math.asin(sinFi);
+
+        if (sinlambda >= 0 && coslambda >= 0)
+            lambda=Math.asin(sinlambda);
+        if (sinlambda >= 0 && coslambda <= 0)
+            lambda = Math.PI - Math.asin(sinlambda);
+        if (sinlambda <= 0 && coslambda <= 0)
+            lambda = Math.PI - Math.asin(sinlambda);
+        if (sinlambda <= 0 && coslambda >= 0)
+            lambda = Math.asin(sinlambda);
+
+        lambda = lambda - omegaZemli * (t-(24*3600)*(t/(24*3600))) - t / Tzv*dOmega; //----------------------------------------------------------
+//        if (lambda<-Math.PI) lambda = lambda + 2*Math.PI;
+//        if (lambda<-Math.PI) lambda = lambda + 2*Math.PI;
+//        if (lambda>Math.PI) lambda = lambda-2*Math.PI;
+//        if (lambda>Math.PI) lambda = lambda-2*Math.PI;
+//        if (lambda>Math.PI) lambda = lambda-2*Math.PI;
+//        if (lambda>Math.PI) lambda = lambda-2*Math.PI;
+
+        x=x0i+(mX*lambda*180/Math.PI);
+        y=y0i-(mY*fi*180/Math.PI);
 //        log.info("fi=" + fi + "\n" + "lambda=" + lambda);
-        return new Coordinate(fi, lambda);
+        return new Coordinate(y, x);
     }
 
     /**
@@ -105,22 +165,6 @@ public class MathModel {
                         / Math.cos(Math.asin(Math.sin(coordinate.getFi()))), (Math.cos(coordinate.getFi()) *
                 Math.cos(coordinate.getLambda()))
                 / Math.cos(Math.asin(Math.sin(coordinate.getFi()))));
-    }
-
-    private Coordinate endCoordinatePlane(CordinateSinCos csc) {
-        Coordinate coordinate = new Coordinate();
-//        log.info("sinFi=" + csc.sinFi + "\n" + "sinLambda=" + csc.sinlambda+ "\n" + "cosLambda=" + csc.coslambda);
-        if (csc.sinlambda>0 && csc.coslambda>0)
-            coordinate.setLambda(Math.asin(csc.sinlambda));
-        if (csc.sinlambda>0 && csc.coslambda<0)
-            coordinate.setLambda(180-Math.asin(csc.sinlambda));
-        if (csc.sinlambda<0 && csc.coslambda<0)
-            coordinate.setLambda(180-Math.asin(csc.sinlambda));
-        if (csc.sinlambda<0 && csc.coslambda>0)
-            coordinate.setLambda(Math.asin(csc.sinlambda));
-        coordinate.setFi(Math.asin(csc.sinFi));
-//        log.info(coordinate.toString());
-        return coordinate;
     }
 
     class CordinateSinCos {
