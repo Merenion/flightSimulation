@@ -14,7 +14,7 @@ public class MathModel {
 
     //константы
     private static final int Rz = 6371; //радиус Земли
-    private static final int mu = 398602; //гравитационный параметр Земли
+    private static final int mu = 398700; //гравитационный параметр Земли
     private static final double omegaZemli = 0.0000729211; //угловая скорость вращения Земли
     private static final double omegaSolnca = 0.000000199106; //угловая скорость вращения Солнца
 
@@ -30,7 +30,11 @@ public class MathModel {
     private double w0;      //начальный аргучент перигея орбиты
     private double Hpi;     //высота перигея орбиты
     private double Ha;      //высота апогея орбиты
-    private double t0;      //начальное время
+
+    //переведенные входные переменные
+    private double iRad;       //угол наклона плоскости орбиты
+    private double omega0Rad;  //долгота восходящего узла орбиты
+    private double w0Rad;      //начальный аргучент перигея орбиты
 
     //начальные параметры орбиты
     private double rpi;             //радиус перигея
@@ -38,7 +42,7 @@ public class MathModel {
     private double e;               //Эксцентриситет орбиты
     private double a;               //Большая полурсь
     private double p;
-    private double r;
+    private double r;               //r которая хз
     private double H;               //Высота полета
     private double Tzv;             //Период обращения звездный
     private double dOmega;
@@ -75,7 +79,6 @@ public class MathModel {
         w0 = 1;
         Hpi = 729;
         Ha = 729;
-        t0 = 0;
     }
 
 
@@ -85,27 +88,27 @@ public class MathModel {
 
 
     public void rashetPorb() {  //Расчет начальных параметров орбиты
-        i =i * Math.PI/180;
-        omega0 = omega0*Math.PI/180;
-        w0 = w0*Math.PI/180;
-        rpi = Rz + Hpi;                                           //радиус перигея
+        iRad = i * Math.PI / 180;
+        omega0Rad = omega0 * Math.PI / 180;
+        w0Rad = w0 * Math.PI / 180;
         ra = Rz + Ha;                                             //радиус апогея
+        rpi = Rz + Hpi;                                           //радиус перигея
         e = (ra - rpi) / (ra + rpi);                              //Эксцентриситет орбиты
         a = (rpi + ra) / 2;                                       //Большая полурсь
-        r = a * (1 - e * e);                                            //Расчет фокального параметра орбиты
-        H = r - Rz;
-        p = a * (1 - Math.pow(e, 2));
+        p = a * (1 - e*e);                                        //расчет фокального параметра орбиты
+        r = p/(1+e*Math.cos(tetaSmall));                          //радиус-вектор КА от центра
+        H = r - Rz;                                               //высота полета
         Tzv = 2 * Math.PI * Math.sqrt(Math.pow(a, 3) / mu);         //Период обращения звездный
         //Расчет векового возмущения первого порядка:
-        dOmega = -35.052 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * Math.cos(i);
+        dOmega = -35.052 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * Math.cos(iRad);                                    //*
         //Расчет векового возмущения аргумента перигея орбиты первого порядка:
-        dw = -17.525 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * (1 - 5 * Math.pow(Math.cos(i), 2));
+        dw = -17.525 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * (1 - 5 * Math.pow(Math.cos(iRad), 2));                 //*
     }
 
     public Coordinate flyModel(float t) {
         rashetPorb();
-        omega = omega0+ t / Tzv * dOmega;                    //Текущий угол восходящего узла орбиты, рад
-        W = w0  + t / Tzv * dw;
+        omega = omega0Rad * Math.PI / 180 + t / Tzv * dOmega;      //Текущий угол восходящего узла орбиты, рад             //*
+        W = w0Rad * Math.PI / 180 + t / Tzv * dw;                  //текущее значение аргумента перигея                    //*
         n = Math.sqrt(mu / Math.pow(a, 3));                        //Определение среднего движения
         dt_sr = t - tau;                                           //Определение промежутка среднего времени с момента прохождения перигея до момента наблюдения
         t_zv = 1.00273791 * dt_sr;                                 //Определение звездного времени
@@ -117,65 +120,43 @@ public class MathModel {
         double E05 = Math.pow(Math.E, 5) / (720 * 32) * (36 * 36 * 6 * Math.sin(6 * M) - 6 * 256 * 4 * Math.sin(4 * M) + 15 * 32 * Math.sin(2 * M));
         double Ea = E01 + E02 + E03 + E04 + E05;                           //Эксцентрическая аномалия
         double Ea0 = Ea - 2 * Math.PI * ((int) (Ea / (2 * Math.PI)));         //Эксцентрическая аномалия приведенная к одному витку
+        sinTetaSmall = Math.sqrt(1 - e * e) * Math.sin(Ea) / (1 - e * Math.cos(Ea));
         cosTetaSmall = (Math.cos(Ea) - e) / (1 - e * Math.cos(Ea));
-        sinTetaSmall = Math.sqrt(1-e*e)*Math.sin(Ea)/(1-e*Math.cos(Ea));
         tetaSmall = Math.asin(sinTetaSmall);
-        if (sinTetaSmall>0 && cosTetaSmall<0) tetaSmall=tetaSmall+Math.PI;
-        if (sinTetaSmall<0 && cosTetaSmall<0) tetaSmall=Math.PI-tetaSmall;
-        if (sinTetaSmall<0 && cosTetaSmall>0) tetaSmall=2*Math.PI-tetaSmall;
+        if (sinTetaSmall > 0 && cosTetaSmall < 0) tetaSmall = tetaSmall + Math.PI;
+        if (sinTetaSmall < 0 && cosTetaSmall < 0) tetaSmall = Math.PI - tetaSmall;
+        if (sinTetaSmall < 0 && cosTetaSmall > 0) tetaSmall = 2 * Math.PI - tetaSmall;
 
 
         //r = a * (1 - e * Math.cos(E));
         u = W + tetaSmall;
-        sinFi = Math.sin(i) * Math.sin(u);
-        cosFi = Math.sqrt(1-sinFi*sinFi);
-        sinlambda = (Math.sin(omega) * Math.cos(u) + Math.cos(omega) * Math.cos(i) * Math.sin(u)) / Math.cos(fiGa);
-        coslambda = (Math.cos(omega) * Math.cos(u) - Math.sin(omega) * Math.cos(i) * Math.sin(u)) / Math.cos(fiGa);
+        sinFi = Math.sin(iRad) * Math.sin(u);
+        cosFi = Math.sqrt(1 - sinFi * sinFi);
         fi = Math.asin(sinFi);
+        sinlambda = (Math.sin(omega) * Math.cos(u) + Math.cos(omega) * Math.cos(iRad) * Math.sin(u)) / Math.cos(fi);
+        coslambda = (Math.cos(omega) * Math.cos(u) - Math.sin(omega) * Math.cos(iRad) * Math.sin(u)) / Math.cos(fi);
 
-        if (sinlambda >= 0 && coslambda >= 0)
-            lambda=Math.asin(sinlambda);
-        if (sinlambda >= 0 && coslambda <= 0)
-            lambda = Math.PI - Math.asin(sinlambda);
-        if (sinlambda <= 0 && coslambda <= 0)
-            lambda = Math.PI - Math.asin(sinlambda);
-        if (sinlambda <= 0 && coslambda >= 0)
+        if (sinlambda > 0 && coslambda > 0)
             lambda = Math.asin(sinlambda);
+        if (sinlambda > 0 && coslambda < 0)
+            lambda = Math.PI + Math.asin(sinlambda);
+        if (sinlambda < 0 && coslambda < 0)
+            lambda = Math.PI - Math.asin(sinlambda);
+        if (sinlambda < 0 && coslambda > 0)
+            lambda = -Math.asin(sinlambda);
 
-        lambda = lambda - omegaZemli * (t-(24*3600)*(t/(24*3600))) - t / Tzv*dOmega; //----------------------------------------------------------
-//        if (lambda<-Math.PI) lambda = lambda + 2*Math.PI;
-//        if (lambda<-Math.PI) lambda = lambda + 2*Math.PI;
-//        if (lambda>Math.PI) lambda = lambda-2*Math.PI;
-//        if (lambda>Math.PI) lambda = lambda-2*Math.PI;
-//        if (lambda>Math.PI) lambda = lambda-2*Math.PI;
-//        if (lambda>Math.PI) lambda = lambda-2*Math.PI;
+        //lambda = lambda - omegaZemli * t - dOmega * t / Tzv; //----------------------------------------------------------
+        lambda = lambda - omegaZemli * (t-(24*3600)*((int)(t/(24*3600)))) - dOmega * t / Tzv; //----------------------------------------------------------
+        if (lambda < -Math.PI) lambda = lambda + 2 * Math.PI;
+        if (lambda < -Math.PI) lambda = lambda + 2 * Math.PI;
+        if (lambda > Math.PI) lambda = lambda - 2 * Math.PI;
+        if (lambda > Math.PI) lambda = lambda - 2 * Math.PI;
+        if (lambda > Math.PI) lambda = lambda - 2 * Math.PI;
+        if (lambda > Math.PI) lambda = lambda - 2 * Math.PI;
 
-        x=x0i+(mX*lambda*180/Math.PI);
-        y=y0i-(mY*fi*180/Math.PI);
+        x = x0i + ((int)(mX * lambda * 180 / Math.PI));
+        y = y0i - ((int)(mY * fi * 180 / Math.PI));
 //        log.info("fi=" + fi + "\n" + "lambda=" + lambda);
         return new Coordinate(y, x);
-    }
-
-    /**
-     * перевод координат на координаты плоскости
-     */
-    public CordinateSinCos conversionRelativeToThePlaneInSinCos(Coordinate coordinate) {
-        return new CordinateSinCos(Math.sin(coordinate.getFi()),
-                (Math.sin(coordinate.getLambda()) * Math.cos(coordinate.getFi()))
-                        / Math.cos(Math.asin(Math.sin(coordinate.getFi()))), (Math.cos(coordinate.getFi()) *
-                Math.cos(coordinate.getLambda()))
-                / Math.cos(Math.asin(Math.sin(coordinate.getFi()))));
-    }
-
-    class CordinateSinCos {
-        private double sinFi;
-        private double sinlambda;
-        private double coslambda;
-
-        CordinateSinCos(double sinFi, double sinlambda, double coslambda) {
-            this.sinFi = sinFi;
-            this.sinlambda = sinlambda;
-            this.coslambda = coslambda;
-        }
     }
 }
