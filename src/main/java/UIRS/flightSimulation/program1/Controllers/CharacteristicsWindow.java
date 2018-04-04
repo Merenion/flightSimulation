@@ -14,11 +14,19 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class CharacteristicsWindow {
-    private static MathModel mathModel = new MathModel(450,228,2.7,2.7);
+
+    private static MathModel mathModel = new MathModel(450,228,2.4,2.4);
+    //450,228,2.4,2.4
+    private static float timeBegin;
+
+    public static float getTime() {
+        return timeBegin;
+    }
 
     public static MathModel getMathModel() {
         return mathModel;
     }
+
 
     @FXML
     public RadioButton radioButtonCircleOrbit;  //выбрана ли круговая орбита
@@ -41,10 +49,12 @@ public class CharacteristicsWindow {
     }
 
     public void onStart(ActionEvent actionEvent) {
-        System.out.println("on Button Start");
-                mathModel.flyModel(
-                        Float.parseFloat(lbAngleNaclonOrbit.getText())
-                );
+        mathModel.setI(Double.parseDouble(lbAngleNaclonOrbit.getText()));
+        mathModel.setOmega0(Double.parseDouble(lbDolgotaVoshodUthla.getText()));
+        mathModel.setW0(Double.parseDouble(lbBeginArgumentPerigeya.getText()));
+        mathModel.setHpi(Double.parseDouble(lbHightPerigei.getText()));
+        mathModel.setHa(Double.parseDouble(lbHightApogei.getText()));
+        timeBegin = Float.parseFloat(lbStartTIme.getText());
         try {
             openWindowSimulationFlight();
         } catch (IOException e) {
@@ -61,7 +71,7 @@ public class CharacteristicsWindow {
         Stage stage= new Stage();
         stage.setTitle("Имитация");
         stage.setResizable(false);
-        Scene scene = new Scene(root, 1000, 600);
+        Scene scene = new Scene(root, 940, 623);
         stage.setScene(scene);
         Stage stageThis = (Stage) lbStartTIme.getScene().getWindow();
         stageThis.close();

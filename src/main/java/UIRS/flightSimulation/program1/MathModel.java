@@ -75,8 +75,8 @@ public class MathModel {
 
     public void setTestData() {
         i = 98.3;
-        omega0 = 1;
-        w0 = 1;
+        omega0 = 0;
+        w0 = 0;
         Hpi = 729;
         Ha = 729;
     }
@@ -106,23 +106,22 @@ public class MathModel {
     }
 
     public Coordinate flyModel(float t) {
-        rashetPorb();
-        omega = omega0Rad * Math.PI / 180 + t / Tzv * dOmega;      //Текущий угол восходящего узла орбиты, рад             //*
-        W = w0Rad * Math.PI / 180 + t / Tzv * dw;                  //текущее значение аргумента перигея                    //*
+        omega = omega0Rad + t / Tzv * dOmega;                      //Текущий угол восходящего узла орбиты, рад             //*
+        W = w0Rad*Math.PI/180  + t / Tzv * dw;                  //текущее значение аргумента перигея                                   //*
         n = Math.sqrt(mu / Math.pow(a, 3));                        //Определение среднего движения
         dt_sr = t - tau;                                           //Определение промежутка среднего времени с момента прохождения перигея до момента наблюдения
         t_zv = 1.00273791 * dt_sr;                                 //Определение звездного времени
         M = t_zv * n;                                              //Определение средней аномалии
         double E01 = M + e * Math.sin(M) + (e * e / 2) * Math.sin(2 * M);        //Первый член разложения уравнения Кеплера (E-e*sin(E)=M
         double E02 = e * e * e / 24 * (9 * Math.sin(3 * M) - 3 * Math.sin(M)); //Второй член разложения и т.д.
-        double E03 = Math.pow(Math.E, 4) / (24 * 8) * (64 * Math.sin(4 * M) - 32 * Math.sin(2 * M));
-        double E04 = Math.pow(Math.E, 4) / (120 * 16) * (625 * Math.sin(5 * M) + 5 * 81 * Math.sin(3 * M) + 10 * Math.sin(M));
-        double E05 = Math.pow(Math.E, 5) / (720 * 32) * (36 * 36 * 6 * Math.sin(6 * M) - 6 * 256 * 4 * Math.sin(4 * M) + 15 * 32 * Math.sin(2 * M));
+        double E03 = Math.pow(e, 4) / (24 * 8) * (64 * Math.sin(4 * M) - 32 * Math.sin(2 * M));
+        double E04 = Math.pow(e, 4) / (120 * 16) * (625 * Math.sin(5 * M) + 5 * 81 * Math.sin(3 * M) + 10 * Math.sin(M));
+        double E05 = Math.pow(e, 5) / (720 * 32) * (36 * 36 * 6 * Math.sin(6 * M) - 6 * 256 * 4 * Math.sin(4 * M) + 15 * 32 * Math.sin(2 * M));
         double Ea = E01 + E02 + E03 + E04 + E05;                           //Эксцентрическая аномалия
         double Ea0 = Ea - 2 * Math.PI * ((int) (Ea / (2 * Math.PI)));         //Эксцентрическая аномалия приведенная к одному витку
         sinTetaSmall = Math.sqrt(1 - e * e) * Math.sin(Ea) / (1 - e * Math.cos(Ea));
         cosTetaSmall = (Math.cos(Ea) - e) / (1 - e * Math.cos(Ea));
-        tetaSmall = Math.asin(sinTetaSmall);
+        tetaSmall = Math.atan(Math.sqrt(1-cosTetaSmall*cosTetaSmall)/cosTetaSmall);
         if (sinTetaSmall > 0 && cosTetaSmall < 0) tetaSmall = tetaSmall + Math.PI;
         if (sinTetaSmall < 0 && cosTetaSmall < 0) tetaSmall = Math.PI - tetaSmall;
         if (sinTetaSmall < 0 && cosTetaSmall > 0) tetaSmall = 2 * Math.PI - tetaSmall;
@@ -132,19 +131,20 @@ public class MathModel {
         u = W + tetaSmall;
         sinFi = Math.sin(iRad) * Math.sin(u);
         cosFi = Math.sqrt(1 - sinFi * sinFi);
-        fi = Math.asin(sinFi);
+        fi = Math.atan(sinFi/Math.sqrt(1-sinFi*sinFi));
         sinlambda = (Math.sin(omega) * Math.cos(u) + Math.cos(omega) * Math.cos(iRad) * Math.sin(u)) / Math.cos(fi);
         coslambda = (Math.cos(omega) * Math.cos(u) - Math.sin(omega) * Math.cos(iRad) * Math.sin(u)) / Math.cos(fi);
-
+        //System.out.println(sinlambda);
+        //System.out.println(coslambda);
         if (sinlambda > 0 && coslambda > 0)
-            lambda = Math.asin(sinlambda);
+            lambda = Math.atan(sinlambda/Math.sqrt(1-sinlambda*sinlambda));
         if (sinlambda > 0 && coslambda < 0)
-            lambda = Math.PI + Math.asin(sinlambda);
+            lambda = Math.PI + Math.atan(Math.sqrt(1-coslambda*coslambda)/coslambda);
         if (sinlambda < 0 && coslambda < 0)
-            lambda = Math.PI - Math.asin(sinlambda);
+            lambda = Math.PI - Math.atan(sinlambda/Math.sqrt(1-sinlambda*sinlambda));
         if (sinlambda < 0 && coslambda > 0)
-            lambda = -Math.asin(sinlambda);
-
+            lambda = -Math.atan(Math.sqrt(1-coslambda*coslambda)/coslambda);
+        double kk = lambda;
         //lambda = lambda - omegaZemli * t - dOmega * t / Tzv; //----------------------------------------------------------
         lambda = lambda - omegaZemli * (t-(24*3600)*((int)(t/(24*3600)))) - dOmega * t / Tzv; //----------------------------------------------------------
         if (lambda < -Math.PI) lambda = lambda + 2 * Math.PI;
@@ -154,9 +154,32 @@ public class MathModel {
         if (lambda > Math.PI) lambda = lambda - 2 * Math.PI;
         if (lambda > Math.PI) lambda = lambda - 2 * Math.PI;
 
+        //System.out.println("lambda= "+lambda +"\n t= " + t);
         x = x0i + ((int)(mX * lambda * 180 / Math.PI));
         y = y0i - ((int)(mY * fi * 180 / Math.PI));
+//        if (sinlambda > 0 && coslambda < 0)
+//            y = y0i + ((int)(mY * fi * 180 / Math.PI));
 //        log.info("fi=" + fi + "\n" + "lambda=" + lambda);
         return new Coordinate(y, x);
+    }
+
+    public void setI(double i) {
+        this.i = i;
+    }
+
+    public void setOmega0(double omega0) {
+        this.omega0 = omega0;
+    }
+
+    public void setW0(double w0) {
+        this.w0 = w0;
+    }
+
+    public void setHpi(double hpi) {
+        Hpi = hpi;
+    }
+
+    public void setHa(double ha) {
+        Ha = ha;
     }
 }
