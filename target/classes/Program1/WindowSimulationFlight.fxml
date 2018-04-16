@@ -23,6 +23,6 @@
       </effect>
     </TextArea>
     <Button layoutX="18.0" layoutY="103.0" mnemonicParsing="false" onAction="#onBack" prefHeight="30.0" prefWidth="65.00009999999747" text="Назад" />
-    <Pane fx:id="paneCoordinate" layoutX="19.0" layoutY="149.0" prefHeight="456.0" prefWidth="900.0" />
+    <Pane id="paneCoordinate" fx:id="idPane" layoutX="19.0" layoutY="149.0" prefHeight="456.0" prefWidth="900.0" />
   </children>
 </AnchorPane>

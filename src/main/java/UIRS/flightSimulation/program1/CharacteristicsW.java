@@ -1,6 +1,6 @@
-package UIRS.flightSimulation.program1.Controllers;
+package UIRS.flightSimulation.program1;
 
-import UIRS.flightSimulation.program1.MathModel;
+import UIRS.flightSimulation.program1.MathModel.MathModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,12 +8,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class CharacteristicsWindow {
+public class CharacteristicsW {
 
     private static MathModel mathModel = new MathModel(450,228,2.4,2.4);
     //450,228,2.4,2.4

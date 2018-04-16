@@ -1,7 +1,5 @@
 package UIRS.flightSimulation;
 
-import UIRS.flightSimulation.ControllersStartMenu.StartMenu;
-import UIRS.flightSimulation.program1.MathModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

@@ -1,4 +1,4 @@
-package UIRS.flightSimulation.program1;
+package UIRS.flightSimulation.program1.MathModel;
 
 import java.util.logging.Logger;
 

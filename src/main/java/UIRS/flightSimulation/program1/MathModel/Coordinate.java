@@ -1,13 +1,11 @@
-package UIRS.flightSimulation.program1;
+package UIRS.flightSimulation.program1.MathModel;
 
 public class Coordinate {
 
-    public Coordinate(double fi, double lambda) {
-        this.fi = fi;
-        this.lambda = lambda;
-    }
+    private double fi;
+    private double lambda;
 
-    public Coordinate(double fi, double lambda, double additionally) {
+    public Coordinate(double fi, double lambda) {
         this.fi = fi;
         this.lambda = lambda;
     }
@@ -23,9 +21,6 @@ public class Coordinate {
                 ", lambda=" + lambda +
                 '}';
     }
-
-    private double fi;
-    private double lambda;
 
     public double getFi() {
         return fi;
