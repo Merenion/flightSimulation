@@ -2,6 +2,7 @@ package UIRS.flightSimulation.program1;
 
 import UIRS.flightSimulation.program1.MathModel.Coordinate;
 import UIRS.flightSimulation.program1.MathModel.MathModel;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,6 +26,8 @@ public class SimulationFlight {
     @FXML
     public Pane idPane;
 
+    private static volatile Coordinate coordinate;
+    private static volatile Coordinate coordinateNew;
 
     @FXML
     public void initialize() {
@@ -36,55 +39,58 @@ public class SimulationFlight {
             @Override
             protected Void call() {
                 try {
-                //    draw();
+                    draw();
                 } catch (Exception ex) {
                     updateMessage(ex.getMessage());
                 }
                 return null;
             }
 
-//            private void draw() {
-//                float step = 0.2f;
-//                float mash = 20;
-//                Platform.runLater(() -> idPane.getChildren().clear());
-//                updateMessage("Рисование начато");
-//                for (float i = 0; i < 430 / mash; i += step) {
-//                    if (isCancelled()) {
-//                        updateMessage("Рисование прервано");
-//                        return;
-//                    }
-//
-//
-//                    Platform.runLater(new Runnable() {
-//                        float i;
-//
-//                        @Override
-//                        public void run() {
-//                            MoveTo moveTo = new MoveTo(i * mash, Math.sin(i) * mash + 50);
-//                            LineTo lineTo = new LineTo(((i + step) * mash), Math.sin(i + step) * mash + 50);
-//                            Path path = new Path(moveTo, lineTo);
-//                            idPane.getChildren().add(path);
-//                            updateMessage("Отрисован шаг: i = " + i);
-//                            updateProgress(i, 430 / mash);
-//                        }
-//
-//                        Runnable param(float i) {
-//                            this.i = i;
-//                            return this;
-//                        }
-//                    }.param(i));
-//
-//                    try {
-//                        Thread.sleep(100);
-//                    } catch (InterruptedException interrupted) {
-//                        if (isCancelled()) {
-//                            updateMessage("Рисование прервано");
-//                            return;
-//                        }
-//                    }
-//                }
-//                updateMessage("Рисование завершено");
-//            }
+            private void draw() {
+
+                Platform.runLater(() -> idPane.getChildren().clear());
+                updateMessage("Рисование начато");
+                coordinate = mathModel.flyModel(timeBegin);
+                for (float i = timeBegin; i < 100000; i++) {
+
+                    if (isCancelled()) {
+                        updateMessage("Рисование прервано");
+                        return;
+                    }
+
+                    Platform.runLater(new Runnable() {
+                        float i;
+
+                        @Override
+                        public void run() {
+                            Path path = new Path();
+                            path.setStrokeWidth(2);
+                            path.setStroke(Color.YELLOW);
+                            MoveTo moveTo = new MoveTo(coordinate.getLambda(), coordinate.getFi());
+                            coordinateNew = mathModel.flyModel(i);
+                            LineTo lineTo = new LineTo(coordinateNew.getLambda(), coordinateNew.getFi());
+                            path.getElements().addAll(moveTo, lineTo);
+                            idPane.getChildren().add(path);
+                            coordinate = coordinateNew;
+                        }
+
+                        Runnable param(float i) {
+                            this.i = i;
+                            return this;
+                        }
+                    }.param(i));
+
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException interrupted) {
+                        if (isCancelled()) {
+                            updateMessage("Рисование прервано");
+                            return;
+                        }
+                    }
+                }
+                updateMessage("Рисование завершено");
+            }
 
             @Override
             protected void updateMessage(String message) {
@@ -96,19 +102,34 @@ public class SimulationFlight {
     }
 
     public void onStart(ActionEvent actionEvent) {
-        Coordinate coordinateNew;
-        Coordinate coordinate = mathModel.flyModel(timeBegin); //координаты от которых рисуем линию впервый раз
-        for (float i = timeBegin + 1; i < 12200; i++) {
-            Path path = new Path();
-            path.setStrokeWidth(2);
-            path.setStroke(Color.YELLOW);
-            MoveTo moveTo = new MoveTo(coordinate.getLambda(), coordinate.getFi());
-            coordinateNew = mathModel.flyModel(i);
-            LineTo lineTo = new LineTo(coordinateNew.getLambda(), coordinateNew.getFi());
-            path.getElements().addAll(moveTo, lineTo);
-            idPane.getChildren().add(path);
-            coordinate = coordinateNew;
+        if (task != null && task.isRunning()) {
+            task.cancel();
         }
+
+        task = createTask();
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+
+//        label.textProperty().bind(task.messageProperty());
+//        progressBar.progressProperty().bind(task.progressProperty());
+//
+//        buttonStart.disableProperty().bind(task.runningProperty());
+//        buttonStop.disableProperty().bind(task.runningProperty().not());
+
+//        Coordinate coordinateNew;
+//        Coordinate coordinate = mathModel.flyModel(timeBegin); //координаты от которых рисуем линию впервый раз
+//        for (float i = timeBegin + 1; i < 12200; i++) {
+//            Path path = new Path();
+//            path.setStrokeWidth(2);
+//            path.setStroke(Color.YELLOW);
+//            MoveTo moveTo = new MoveTo(coordinate.getLambda(), coordinate.getFi());
+//            coordinateNew = mathModel.flyModel(i);
+//            LineTo lineTo = new LineTo(coordinateNew.getLambda(), coordinateNew.getFi());
+//            path.getElements().addAll(moveTo, lineTo);
+//            idPane.getChildren().add(path);
+//            coordinate = coordinateNew;
+//        }
     }
 
     public void onStop(ActionEvent actionEvent) {
