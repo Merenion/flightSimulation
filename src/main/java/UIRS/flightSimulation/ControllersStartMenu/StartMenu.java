@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -18,7 +19,8 @@ public class StartMenu {
 
     @FXML
     public void initialize () {
-
+        Canvas canvas = new Canvas();
+        canvas.
     }
 
     public void onBtProgram1(ActionEvent actionEvent) throws IOException {
