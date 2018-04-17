@@ -2,39 +2,39 @@ package UIRS.flightSimulation.program1.MathModel;
 
 public class Coordinate {
 
-    private double fi;
-    private double lambda;
+    private double y;
+    private double x;
 
-    public Coordinate(double fi, double lambda) {
-        this.fi = fi;
-        this.lambda = lambda;
+    public Coordinate(double y, double x) {
+        this.y = y;
+        this.x = x;
     }
 
     public Coordinate() {
-        this.lambda = lambda;
+        this.x = x;
     }
 
     @Override
     public String toString() {
         return "Coordinate{" +
-                "fi=" + fi +
-                ", lambda=" + lambda +
+                "y=" + y +
+                ", x=" + x +
                 '}';
     }
 
-    public double getFi() {
-        return fi;
+    public double getY() {
+        return y;
     }
 
-    public void setFi(double fi) {
-        this.fi = fi;
+    public void setY(double y) {
+        this.y = y;
     }
 
-    public double getLambda() {
-        return lambda;
+    public double getX() {
+        return x;
     }
 
-    public void setLambda(double lambda) {
-        this.lambda = lambda;
+    public void setX(double x) {
+        this.x = x;
     }
 }

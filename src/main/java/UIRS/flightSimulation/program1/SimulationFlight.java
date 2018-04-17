@@ -1,6 +1,7 @@
 package UIRS.flightSimulation.program1;
 
 import UIRS.flightSimulation.program1.MathModel.Coordinate;
+import UIRS.flightSimulation.program1.MathModel.IMathModel;
 import UIRS.flightSimulation.program1.MathModel.MathModel;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -15,12 +16,11 @@ import javafx.scene.shape.Path;
 
 public class SimulationFlight {
 
-    //берем данные с предыдущей формы.
-    private static MathModel mathModel = CharacteristicsW.getMathModel();
-    private float timeBegin = CharacteristicsW.getTime();
+    private IMathModel mathModel;
+    private InitialCharacteristics initCh = InitialCharacteristics.getInitialCharacteristics();
+
     private Task<Void> task;
 
-    //берем обьекты с формы для рисования и вывода данных
     @FXML
     public TextArea idAreaTimeOfLight;
     @FXML
@@ -31,6 +31,7 @@ public class SimulationFlight {
 
     @FXML
     public void initialize() {
+        mathModel = new MathModel( new CenterPane(450,228,2.4,2.4),initCh);
         mathModel.rashetPorb();   //рассчет начальных параметров орбиты
     }
 
@@ -50,8 +51,8 @@ public class SimulationFlight {
 
                 Platform.runLater(() -> idPane.getChildren().clear());
                 updateMessage("Рисование начато");
-                coordinate = mathModel.flyModel(timeBegin);
-                for (float i = timeBegin; i < 100000; i++) {
+                coordinate = mathModel.flyModel(initCh.getStartTime());
+                for (float i = initCh.getStartTime(); i < 100000; i++) {
 
                     if (isCancelled()) {
                         updateMessage("Рисование прервано");
@@ -59,19 +60,23 @@ public class SimulationFlight {
                     }
 
                     Platform.runLater(new Runnable() {
+
                         float i;
 
                         @Override
-                        public void run() {
+                        public  void run() {
                             Path path = new Path();
                             path.setStrokeWidth(2);
                             path.setStroke(Color.YELLOW);
-                            MoveTo moveTo = new MoveTo(coordinate.getLambda(), coordinate.getFi());
+                            MoveTo moveTo = new MoveTo(coordinate.getX(), coordinate.getY());
                             coordinateNew = mathModel.flyModel(i);
-                            LineTo lineTo = new LineTo(coordinateNew.getLambda(), coordinateNew.getFi());
+                            LineTo lineTo = new LineTo(coordinateNew.getX(), coordinateNew.getY());
                             path.getElements().addAll(moveTo, lineTo);
                             idPane.getChildren().add(path);
+                            if (i>5000)
+                            idPane.getChildren().remove(0);
                             coordinate = coordinateNew;
+
                         }
 
                         Runnable param(float i) {
@@ -79,9 +84,8 @@ public class SimulationFlight {
                             return this;
                         }
                     }.param(i));
-
                     try {
-                        Thread.sleep(1);
+                        Thread.sleep(0,1);
                     } catch (InterruptedException interrupted) {
                         if (isCancelled()) {
                             updateMessage("Рисование прервано");
@@ -91,6 +95,8 @@ public class SimulationFlight {
                 }
                 updateMessage("Рисование завершено");
             }
+
+
 
             @Override
             protected void updateMessage(String message) {
@@ -123,9 +129,9 @@ public class SimulationFlight {
 //            Path path = new Path();
 //            path.setStrokeWidth(2);
 //            path.setStroke(Color.YELLOW);
-//            MoveTo moveTo = new MoveTo(coordinate.getLambda(), coordinate.getFi());
+//            MoveTo moveTo = new MoveTo(coordinate.getX(), coordinate.getY());
 //            coordinateNew = mathModel.flyModel(i);
-//            LineTo lineTo = new LineTo(coordinateNew.getLambda(), coordinateNew.getFi());
+//            LineTo lineTo = new LineTo(coordinateNew.getX(), coordinateNew.getY());
 //            path.getElements().addAll(moveTo, lineTo);
 //            idPane.getChildren().add(path);
 //            coordinate = coordinateNew;

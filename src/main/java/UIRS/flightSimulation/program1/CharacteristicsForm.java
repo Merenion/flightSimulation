@@ -12,20 +12,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class CharacteristicsW {
+public class CharacteristicsForm {
 
-    private static MathModel mathModel = new MathModel(450,228,2.4,2.4);
     //450,228,2.4,2.4
-    private static float timeBegin;
-
-    public static float getTime() {
-        return timeBegin;
-    }
-
-    public static MathModel getMathModel() {
-        return mathModel;
-    }
-
 
     @FXML
     public RadioButton radioButtonCircleOrbit;  //выбрана ли круговая орбита
@@ -48,12 +37,14 @@ public class CharacteristicsW {
     }
 
     public void onStart(ActionEvent actionEvent) {
-        mathModel.setI(Double.parseDouble(lbAngleNaclonOrbit.getText()));
-        mathModel.setOmega0(Double.parseDouble(lbDolgotaVoshodUthla.getText()));
-        mathModel.setW0(Double.parseDouble(lbBeginArgumentPerigeya.getText()));
-        mathModel.setHpi(Double.parseDouble(lbHightPerigei.getText()));
-        mathModel.setHa(Double.parseDouble(lbHightApogei.getText()));
-        timeBegin = Float.parseFloat(lbStartTIme.getText());
+        InitialCharacteristics initialCharacteristics =
+                InitialCharacteristics.getInitialCharacteristics().setI(Double.parseDouble(lbAngleNaclonOrbit.getText()))
+                .setOmega0(Double.parseDouble(lbDolgotaVoshodUthla.getText()))
+                .setW0(Double.parseDouble(lbBeginArgumentPerigeya.getText()))
+                .setHpi(Double.parseDouble(lbHightPerigei.getText()))
+                .setHa(Double.parseDouble(lbHightApogei.getText()))
+                        .setStartTime(Float.parseFloat(lbStartTIme.getText()));
+
         try {
             openWindowSimulationFlight();
         } catch (IOException e) {
@@ -73,7 +64,7 @@ public class CharacteristicsW {
         Scene scene = new Scene(root, 940, 623);
         stage.setScene(scene);
         Stage stageThis = (Stage) lbStartTIme.getScene().getWindow();
-        stageThis.close();
+            stageThis.close();
         stage.show();
     }
 }

@@ -19,8 +19,6 @@ public class StartMenu {
 
     @FXML
     public void initialize () {
-        Canvas canvas = new Canvas();
-        canvas.
     }
 
     public void onBtProgram1(ActionEvent actionEvent) throws IOException {

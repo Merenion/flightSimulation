@@ -1,35 +1,23 @@
 package UIRS.flightSimulation.program1.MathModel;
 
+import UIRS.flightSimulation.program1.CenterPane;
+import UIRS.flightSimulation.program1.InitialCharacteristics;
+
 import java.util.logging.Logger;
 
-public class MathModel {
-    private static Logger log = Logger.getGlobal();
-
-    public MathModel(double x0i, double y0i, double mX, double mY) {
-        this.x0i = x0i;
-        this.y0i = y0i;
-        this.mX = mX;
-        this.mY = mY;
+public class MathModel implements IMathModel{
+    public MathModel(CenterPane centerPane, InitialCharacteristics initialCharacteristics) {
+        initCh = initialCharacteristics;
+        this.centerPane = centerPane;
     }
 
-    //константы
-    private static final int Rz = 6371; //радиус Земли
-    private static final int mu = 398700; //гравитационный параметр Земли
-    private static final double omegaZemli = 0.0000729211; //угловая скорость вращения Земли
-    private static final double omegaSolnca = 0.000000199106; //угловая скорость вращения Солнца
+    private static Logger log = Logger.getGlobal();
 
-    //координаты центра и массштаю
-    private double x0i;     //центр по X
-    private double y0i;     //центр по Y
-    private double mX;      //массштаб по X
-    private double mY;      //массштаб по Y
+    //координаты центра и массштаб
+    private CenterPane centerPane;
 
-    // входные переменные
-    private double i;       //угол наклона плоскости орбиты
-    private double omega0;  //долгота восходящего узла орбиты
-    private double w0;      //начальный аргучент перигея орбиты
-    private double Hpi;     //высота перигея орбиты
-    private double Ha;      //высота апогея орбиты
+    // входные паременные
+    private InitialCharacteristics initCh;
 
     //переведенные входные переменные
     private double iRad;       //угол наклона плоскости орбиты
@@ -72,27 +60,16 @@ public class MathModel {
     private double x;
     private double y;
 
-
-    public void setTestData() {
-        i = 98.3;
-        omega0 = 0;
-        w0 = 0;
-        Hpi = 729;
-        Ha = 729;
-    }
-
-
     //другие переменные
     private double tau = 0;
-    private static float dt = 1; //шаг расчета по времени
 
 
     public void rashetPorb() {  //Расчет начальных параметров орбиты
-        iRad = i * Math.PI / 180;
-        omega0Rad = omega0 * Math.PI / 180;
-        w0Rad = w0 * Math.PI / 180;
-        ra = Rz + Ha;                                             //радиус апогея
-        rpi = Rz + Hpi;                                           //радиус перигея
+        iRad = initCh.getI() * Math.PI / 180;
+        omega0Rad = initCh.getOmega0() * Math.PI / 180;
+        w0Rad = initCh.getW0() * Math.PI / 180;
+        ra = Rz + initCh.getHa();                                             //радиус апогея
+        rpi = Rz + initCh.getHpi();                                           //радиус перигея
         e = (ra - rpi) / (ra + rpi);                              //Эксцентриситет орбиты
         a = (rpi + ra) / 2;                                       //Большая полурсь
         p = a * (1 - e*e);                                        //расчет фокального параметра орбиты
@@ -100,14 +77,14 @@ public class MathModel {
         H = r - Rz;                                               //высота полета
         Tzv = 2 * Math.PI * Math.sqrt(Math.pow(a, 3) / mu);         //Период обращения звездный
         //Расчет векового возмущения первого порядка:
-        dOmega = -35.052 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * Math.cos(iRad);                                    //*
+        dOmega = -35.052 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * Math.cos(iRad);
         //Расчет векового возмущения аргумента перигея орбиты первого порядка:
-        dw = -17.525 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * (1 - 5 * Math.pow(Math.cos(iRad), 2));                 //*
+        dw = -17.525 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * (1 - 5 * Math.pow(Math.cos(iRad), 2));
     }
 
     public Coordinate flyModel(float t) {
-        omega = omega0Rad + t / Tzv * dOmega;                      //Текущий угол восходящего узла орбиты, рад             //*
-        W = w0Rad*Math.PI/180  + t / Tzv * dw;                  //текущее значение аргумента перигея                                   //*
+        omega = omega0Rad + t / Tzv * dOmega;                      //Текущий угол восходящего узла орбиты, рад
+        W = w0Rad*Math.PI/180  + t / Tzv * dw;                  //текущее значение аргумента перигея
         n = Math.sqrt(mu / Math.pow(a, 3));                        //Определение среднего движения
         dt_sr = t - tau;                                           //Определение промежутка среднего времени с момента прохождения перигея до момента наблюдения
         t_zv = 1.00273791 * dt_sr;                                 //Определение звездного времени
@@ -126,8 +103,6 @@ public class MathModel {
         if (sinTetaSmall < 0 && cosTetaSmall < 0) tetaSmall = Math.PI - tetaSmall;
         if (sinTetaSmall < 0 && cosTetaSmall > 0) tetaSmall = 2 * Math.PI - tetaSmall;
 
-
-        //r = a * (1 - e * Math.cos(E));
         u = W + tetaSmall;
         sinFi = Math.sin(iRad) * Math.sin(u);
         cosFi = Math.sqrt(1 - sinFi * sinFi);
@@ -155,31 +130,11 @@ public class MathModel {
         if (lambda > Math.PI) lambda = lambda - 2 * Math.PI;
 
         //System.out.println("lambda= "+lambda +"\n t= " + t);
-        x = x0i + ((int)(mX * lambda * 180 / Math.PI));
-        y = y0i - ((int)(mY * fi * 180 / Math.PI));
+        x = centerPane.getX0i() + ((int)(centerPane.getmX() * lambda * 180 / Math.PI));
+        y = centerPane.getY0i()- ((int)(centerPane.getmY() * fi * 180 / Math.PI));
 //        if (sinlambda > 0 && coslambda < 0)
 //            y = y0i + ((int)(mY * fi * 180 / Math.PI));
 //        log.info("fi=" + fi + "\n" + "lambda=" + lambda);
         return new Coordinate(y, x);
-    }
-
-    public void setI(double i) {
-        this.i = i;
-    }
-
-    public void setOmega0(double omega0) {
-        this.omega0 = omega0;
-    }
-
-    public void setW0(double w0) {
-        this.w0 = w0;
-    }
-
-    public void setHpi(double hpi) {
-        Hpi = hpi;
-    }
-
-    public void setHa(double ha) {
-        Ha = ha;
     }
 }
