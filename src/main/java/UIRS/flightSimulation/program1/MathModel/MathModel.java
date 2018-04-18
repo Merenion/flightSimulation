@@ -82,7 +82,7 @@ public class MathModel implements IMathModel{
         dw = -17.525 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * (1 - 5 * Math.pow(Math.cos(iRad), 2));
     }
 
-    public Coordinate flyModel(float t) {
+    public Coordinate flyModel(int t) {
         omega = omega0Rad + t / Tzv * dOmega;                      //Текущий угол восходящего узла орбиты, рад
         W = w0Rad*Math.PI/180  + t / Tzv * dw;                  //текущее значение аргумента перигея
         n = Math.sqrt(mu / Math.pow(a, 3));                        //Определение среднего движения
@@ -98,6 +98,8 @@ public class MathModel implements IMathModel{
         double Ea0 = Ea - 2 * Math.PI * ((int) (Ea / (2 * Math.PI)));         //Эксцентрическая аномалия приведенная к одному витку
         sinTetaSmall = Math.sqrt(1 - e * e) * Math.sin(Ea) / (1 - e * Math.cos(Ea));
         cosTetaSmall = (Math.cos(Ea) - e) / (1 - e * Math.cos(Ea));
+
+        //расчт угла истинной аномалии
         tetaSmall = Math.atan(Math.sqrt(1-cosTetaSmall*cosTetaSmall)/cosTetaSmall);
         if (sinTetaSmall > 0 && cosTetaSmall < 0) tetaSmall = tetaSmall + Math.PI;
         if (sinTetaSmall < 0 && cosTetaSmall < 0) tetaSmall = Math.PI - tetaSmall;
@@ -136,5 +138,21 @@ public class MathModel implements IMathModel{
 //            y = y0i + ((int)(mY * fi * 180 / Math.PI));
 //        log.info("fi=" + fi + "\n" + "lambda=" + lambda);
         return new Coordinate(y, x);
+    }
+
+    public double getW() {
+        return W;
+    }
+
+    public double getTetaSmall() {
+        return tetaSmall;
+    }
+
+    public double getFi() {
+        return fi;
+    }
+
+    public double getLambda() {
+        return lambda;
     }
 }

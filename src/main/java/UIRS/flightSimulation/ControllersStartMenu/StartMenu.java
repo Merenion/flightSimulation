@@ -1,5 +1,6 @@
 package UIRS.flightSimulation.ControllersStartMenu;
 
+import UIRS.flightSimulation.TestMain;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +20,7 @@ public class StartMenu {
 
     @FXML
     public void initialize () {
+
     }
 
     public void onBtProgram1(ActionEvent actionEvent) throws IOException {

@@ -43,7 +43,7 @@ public class CharacteristicsForm {
                 .setW0(Double.parseDouble(lbBeginArgumentPerigeya.getText()))
                 .setHpi(Double.parseDouble(lbHightPerigei.getText()))
                 .setHa(Double.parseDouble(lbHightApogei.getText()))
-                        .setStartTime(Float.parseFloat(lbStartTIme.getText()));
+                        .setStartTime(Integer.parseInt(lbStartTIme.getText()));
 
         try {
             openWindowSimulationFlight();

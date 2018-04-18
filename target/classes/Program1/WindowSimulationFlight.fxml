@@ -15,14 +15,14 @@
         <Image url="@../image/KartaZifr2.png" preserveRatio="true" smooth="true" />
       </image>
     </ImageView>
-    <Button layoutX="19.0" layoutY="14.0" mnemonicParsing="false" onAction="#onStart" prefHeight="30.0" prefWidth="65.0" text="Пуск" />
+    <Button layoutX="19.0" layoutY="16.0" mnemonicParsing="false" onAction="#onStart" prefHeight="30.0" prefWidth="65.0" text="Пуск" />
     <Button layoutX="19.0" layoutY="59.0" mnemonicParsing="false" onAction="#onStop" prefHeight="30.0" prefWidth="65.0" text="Стоп" />
-    <TextArea fx:id="idAreaTimeOfLight" layoutX="109.0" layoutY="14.0" prefHeight="118.99990000000253" prefWidth="137.0" wrapText="true">
+    <TextArea fx:id="idAreaTimeOfLight" layoutX="109.0" layoutY="18.0" prefHeight="112.0" prefWidth="137.0" wrapText="true">
       <effect>
         <InnerShadow color="#330018" />
       </effect>
     </TextArea>
-    <Button layoutX="18.0" layoutY="103.0" mnemonicParsing="false" onAction="#onBack" prefHeight="30.0" prefWidth="65.00009999999747" text="Назад" />
+    <Button layoutX="18.0" layoutY="101.0" mnemonicParsing="false" onAction="#onBack" prefHeight="30.0" prefWidth="65.00009999999747" text="Назад" />
     <Pane id="paneCoordinate" fx:id="idPane" layoutX="19.0" layoutY="149.0" prefHeight="456.0" prefWidth="900.0" />
   </children>
 </AnchorPane>

@@ -1,8 +1,6 @@
 package UIRS.flightSimulation.program1;
 
-import UIRS.flightSimulation.program1.MathModel.Coordinate;
-import UIRS.flightSimulation.program1.MathModel.IMathModel;
-import UIRS.flightSimulation.program1.MathModel.MathModel;
+import UIRS.flightSimulation.program1.MathModel.*;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -18,7 +16,7 @@ public class SimulationFlight {
 
     private IMathModel mathModel;
     private InitialCharacteristics initCh = InitialCharacteristics.getInitialCharacteristics();
-
+    private volatile static ITimeFlight flightTime;
     private Task<Void> task;
 
     @FXML
@@ -31,8 +29,9 @@ public class SimulationFlight {
 
     @FXML
     public void initialize() {
-        mathModel = new MathModel( new CenterPane(450,228,2.4,2.4),initCh);
+        mathModel = new MathModel( new CenterPane(450,228,2.38,2.38),initCh);
         mathModel.rashetPorb();   //рассчет начальных параметров орбиты
+        flightTime = new TimeFlight();
     }
 
     private Task<Void> createTask() {
@@ -52,8 +51,8 @@ public class SimulationFlight {
                 Platform.runLater(() -> idPane.getChildren().clear());
                 updateMessage("Рисование начато");
                 coordinate = mathModel.flyModel(initCh.getStartTime());
-                for (float i = initCh.getStartTime(); i < 100000; i++) {
-
+                for (int i = initCh.getStartTime(); i < 100000; i+=1) {
+                flightTime.setSecond(i);
                     if (isCancelled()) {
                         updateMessage("Рисование прервано");
                         return;
@@ -61,31 +60,38 @@ public class SimulationFlight {
 
                     Platform.runLater(new Runnable() {
 
-                        float i;
+                        int i;
 
                         @Override
                         public  void run() {
                             Path path = new Path();
-                            path.setStrokeWidth(2);
+                            path.setStrokeWidth(1);
                             path.setStroke(Color.YELLOW);
                             MoveTo moveTo = new MoveTo(coordinate.getX(), coordinate.getY());
                             coordinateNew = mathModel.flyModel(i);
-                            LineTo lineTo = new LineTo(coordinateNew.getX(), coordinateNew.getY());
-                            path.getElements().addAll(moveTo, lineTo);
-                            idPane.getChildren().add(path);
-                            if (i>5000)
-                            idPane.getChildren().remove(0);
-                            coordinate = coordinateNew;
+                            if (coordinate.getX()-coordinateNew.getX()>1 || (coordinate.getX() < coordinateNew.getX() )) {
+                                LineTo lineTo = new LineTo(coordinateNew.getX(), coordinateNew.getY());
+                                path.getElements().addAll(moveTo, lineTo);
+                                if (coordinate.getX() < coordinateNew.getX()) {
+                                    flightTime.addCoil(1);
+                                } else {
+                                    idPane.getChildren().add(path);
+                                }
+                                if (idPane.getChildren().size() > 2000)
+                                    idPane.getChildren().remove(0);
+                                coordinate = coordinateNew;
+                            }
+                            idAreaTimeOfLight.setText("timing:\n"+flightTime);
 
                         }
 
-                        Runnable param(float i) {
+                        Runnable param(int i) {
                             this.i = i;
                             return this;
                         }
                     }.param(i));
                     try {
-                        Thread.sleep(0,1);
+                        Thread.sleep(1);
                     } catch (InterruptedException interrupted) {
                         if (isCancelled()) {
                             updateMessage("Рисование прервано");

@@ -10,7 +10,7 @@ public class InitialCharacteristics {
     private double w0=0;      //начальный аргучент перигея орбиты
     private double Hpi=0;     //высота перигея орбиты
     private double Ha=0;      //высота апогея орбиты
-    private float startTime=0;//начальное время
+    private int startTime=0;//начальное время
 
     private InitialCharacteristics (){};
 
@@ -51,7 +51,7 @@ public class InitialCharacteristics {
         return this;
     }
 
-    public InitialCharacteristics setStartTime(float startTime) {
+    public InitialCharacteristics setStartTime(int startTime) {
         this.startTime = startTime;
         singleton = this;
         return this;
@@ -77,7 +77,7 @@ public class InitialCharacteristics {
         return Ha;
     }
 
-    public float getStartTime() {
+    public int getStartTime() {
         return startTime;
     }
 }
