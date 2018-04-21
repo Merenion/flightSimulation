@@ -46,7 +46,7 @@ public class Draw implements IDraw {
     }
 
     @Override
-    public Task<Void> createTask(Pane idPane, IMathModel mathModel) {
+    public Task<Void> createTask(Pane idPane) {
         return new Task<Void>() {
 
             @Override
