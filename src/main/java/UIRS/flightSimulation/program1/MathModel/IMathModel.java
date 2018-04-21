@@ -9,4 +9,13 @@ public interface IMathModel {
 
     void rashetPorb();
     Coordinate flyModel(int t);
+    boolean isInTheSun(int t);
+    int getNcoil();
+    double getW();
+    double getTeta();
+    double getFi();
+    double getLambda();
+    double getSinlambda();
+    double getCoslambda();
+    String getOtheParameters ();
 }

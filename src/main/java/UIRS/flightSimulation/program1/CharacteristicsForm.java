@@ -61,7 +61,7 @@ public class CharacteristicsForm {
         Stage stage= new Stage();
         stage.setTitle("Имитация");
         stage.setResizable(false);
-        Scene scene = new Scene(root, 940, 623);
+        Scene scene = new Scene(root, 905, 615);
         stage.setScene(scene);
         Stage stageThis = (Stage) lbStartTIme.getScene().getWindow();
             stageThis.close();

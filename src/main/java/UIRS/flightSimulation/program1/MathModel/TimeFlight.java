@@ -21,6 +21,10 @@ public class TimeFlight implements ITimeFlight {
         TypeTime.COIL.setValue(TypeTime.COIL.getValue()+value);
     }
 
+    public void setCoil (int value) {
+        TypeTime.COIL.setValue(value);
+    }
+
     @Override
     public void setTimePlot(TypeTime timePlot, int value) {
         timePlot.setValue(value);
@@ -54,6 +58,6 @@ public class TimeFlight implements ITimeFlight {
     private void refreshAllTime(){
     TypeTime.MIN.setValue((int)(TypeTime.SEC.getValue()/60));
     TypeTime.HOUR.setValue((int)(TypeTime.MIN.getValue()/60));
-    TypeTime.DAY.setValue((int)(TypeTime.HOUR.getValue()/12));
+    TypeTime.DAY.setValue((int)(TypeTime.HOUR.getValue()/24));
     }
 }
