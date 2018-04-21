@@ -6,18 +6,20 @@ import UIRS.flightSimulation.program1.InitialCharacteristics;
 import java.util.logging.Logger;
 
 public class MathModel implements IMathModel {
-    public MathModel(CenterPane centerPane, InitialCharacteristics initialCharacteristics) {
-        initCh = initialCharacteristics;
+    public MathModel(CenterPane centerPane, int t) {
         this.centerPane = centerPane;
+        this.t = t;
     }
 
     private static Logger log = Logger.getGlobal();
+
 
     //координаты центра и массштаб
     private CenterPane centerPane;
 
     // входные паременные
-    private InitialCharacteristics initCh;
+    private InitialCharacteristics initCh = InitialCharacteristics.getInitialCharacteristics();
+    private int t;
 
     //переведенные входные переменные
     private double iRad;       //угол наклона плоскости орбиты
@@ -105,8 +107,8 @@ public class MathModel implements IMathModel {
         dw = -17.525 / 60 * Math.PI / 180 * Math.pow((Rz / p), 2) * (1 - 5 * Math.pow(Math.cos(iRad), 2));
     }
 
-    @Override
-    public Coordinate flyModel(int t) {
+
+    private Coordinate flyModel() {
         rashetPorb();
         Ncoil =(int)(t/Tzv);                                       //Целое количество витков с начала полета (с 21 марта)
         Nsut = (int) (t / (24 * 3600));                            //сутки полета
@@ -217,7 +219,7 @@ public class MathModel implements IMathModel {
     }
 
     @Override
-    public boolean isInTheSun(int t) {
+    public boolean isInTheSun() {
         rashetEdVektNapravlNaSolnzVNepodvSistKoord(t);
         double alfa_Ten_Semli = Math.acos(Rz / (Rz + H));  //Определение центрального угла для КА, находящегося на границе тени Ранее была ошибка (Науменко) arcsin(Rs/(Rs+H));
         double Shirota_Zentra_Teti = -shirotaZenitnTochki; //Определение широты центра теневого пятна

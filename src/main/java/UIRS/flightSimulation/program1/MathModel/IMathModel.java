@@ -8,8 +8,7 @@ public interface IMathModel {
     double omegaSolnca = 0.000000199106; //угловая скорость вращения Солнца
 
     void rashetPorb();
-    Coordinate flyModel(int t);
-    boolean isInTheSun(int t);
+    boolean isInTheSun();
     int getNcoil();
     double getW();
     double getTeta();

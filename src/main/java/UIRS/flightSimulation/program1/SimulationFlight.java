@@ -55,7 +55,6 @@ public class SimulationFlight {
     @FXML
     public void initialize() {
         draw = new DrawElement2(idAreaTimeOfLight,idParameters,idIsTheSun);
-        mathModel = new MathModel(new CenterPane(450, 228, 2.37, 2.37),initCh);
         mathModel.rashetPorb();   //рассчет начальных параметров орбиты
         flightTime = new TimeFlight();
     }

@@ -24,13 +24,13 @@ public class Draw implements IDraw {
     protected int lineWidth = 2;
     protected int stepTime = 8;
     protected int drawingStep = 3;
-    protected Color colorTrack = Color.PURPLE;
+    protected Color colorTrack = Color.ORANGE;
 
     Draw() {
         startTime = initCh.getStartTime();
     }
 
-    public Draw(TextArea idTime) {
+    Draw(TextArea idTime) {
         this.idTime = idTime;
     }
 
@@ -91,7 +91,6 @@ public class Draw implements IDraw {
                                     isShowIsTheSun.setText("SHADOW");
                                 }
                             }
-
                         }
 
                         Runnable param(int i) {
