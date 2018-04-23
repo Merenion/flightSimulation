@@ -5,21 +5,20 @@ import UIRS.flightSimulation.program1.InitialCharacteristics;
 
 import java.util.logging.Logger;
 
-public class MathModel implements IMathModel {
-    public MathModel(CenterPane centerPane, int t) {
-        this.centerPane = centerPane;
-        this.t = t;
+public class ImplMathModel implements IMathModel {
+
+    public ImplMathModel() {
+        flyModel(initCh.getStartTime());
     }
 
     private static Logger log = Logger.getGlobal();
-
-
-    //координаты центра и массштаб
-    private CenterPane centerPane;
+    private ITimeFlight timeFlight = new ImplTimeFlight();
 
     // входные паременные
     private InitialCharacteristics initCh = InitialCharacteristics.getInitialCharacteristics();
-    private int t;
+
+    //время которому соответствуют все параметры
+    private double t;
 
     //переведенные входные переменные
     private double iRad;       //угол наклона плоскости орбиты
@@ -88,8 +87,8 @@ public class MathModel implements IMathModel {
     private double dolgotaZenitnTochki;
 
 
-    @Override
-    public void rashetPorb() {  //Расчет начальных параметров орбиты
+
+    private void rashetPorb() {  //Расчет начальных параметров орбиты
         iRad = initCh.getI() * Math.PI / 180;
         omega0Rad = initCh.getOmega0() * Math.PI / 180;
         w0Rad = initCh.getW0() * Math.PI / 180;
@@ -108,7 +107,8 @@ public class MathModel implements IMathModel {
     }
 
 
-    private Coordinate flyModel() {
+    private void flyModel(int t) {
+        this.t = t;
         rashetPorb();
         Ncoil =(int)(t/Tzv);                                       //Целое количество витков с начала полета (с 21 марта)
         Nsut = (int) (t / (24 * 3600));                            //сутки полета
@@ -128,13 +128,15 @@ public class MathModel implements IMathModel {
         double Ea0 = Ea - 2 * Math.PI * ((int) (Ea / (2 * Math.PI)));         //Эксцентрическая аномалия приведенная к одному витку
         sinTetaSmall = Math.sqrt(1 - e * e) * Math.sin(Ea) / (1 - e * Math.cos(Ea));
         cosTetaSmall = (Math.cos(Ea) - e) / (1 - e * Math.cos(Ea));
-
         //расчт угла истинной аномалии
         tetaSmall = Math.atan(Math.sqrt(1 - cosTetaSmall * cosTetaSmall) / cosTetaSmall);
         if (sinTetaSmall > 0 && cosTetaSmall < 0) tetaSmall = tetaSmall + Math.PI;
         if (sinTetaSmall < 0 && cosTetaSmall < 0) tetaSmall = Math.PI - tetaSmall;
         if (sinTetaSmall < 0 && cosTetaSmall > 0) tetaSmall = 2 * Math.PI - tetaSmall;
-
+    }
+    @Override
+    public Coordinate getCoordinate2DMap (int t,CenterPane centerPane){
+        pereschetParametersIsNeed(t);
         u = W + tetaSmall;
         sinFi = Math.sin(iRad) * Math.sin(u);
         cosFi = Math.sqrt(1 - sinFi * sinFi);
@@ -165,6 +167,7 @@ public class MathModel implements IMathModel {
 
     //Вычисление проекции вектора S в неподвижной геоцентрической СК
     private void calculationProjectionVectorS(int t) {
+        pereschetParametersIsNeed(t);
         ac = 2 * Math.PI * t / (365 * 24 * 3600);
         Sx = Math.cos(ac);
         Sy = Math.sin(ac) * Math.cos(dc);
@@ -173,10 +176,10 @@ public class MathModel implements IMathModel {
 
     //Расчет координат единичного вектора в направлени на Солнце в неподвижной геоцентрической системе координат
     private void rashetEdVektNapravlNaSolnzVNepodvSistKoord(int t) {
+        pereschetParametersIsNeed(t);
         //Расчет угла между направлением на точку весеннего равноденствия
         // и направлением на Солнце
         double ac = 2 * Math.PI / (365.2422 * 24 * 3600) * t;
-
         //Расчет проекций вектора
         double Sx = Math.cos(ac);
         double Sy = Math.sin(ac) * Math.cos(dc);
@@ -190,11 +193,11 @@ public class MathModel implements IMathModel {
         double Cos_Dolgota_Zenitn_Tochki = Sx / Math.cos(shirotaZenitnTochki);
         double Sin_Dolgota_Zenitn_Tochki = Sy / Math.cos(shirotaZenitnTochki);
 
-//        //Предохранение от неточностей расчета
-//        if (Sin_Dolgota_Zenitn_Tochki > 1)  Sin_Dolgota_Zenitn_Tochki=1;
-//        if (Sin_Dolgota_Zenitn_Tochki < -1) Sin_Dolgota_Zenitn_Tochki=-1;
-//        if (Cos_Dolgota_Zenitn_Tochki > 1) Cos_Dolgota_Zenitn_Tochki=1;
-//        if (Cos_Dolgota_Zenitn_Tochki < -1) Cos_Dolgota_Zenitn_Tochki=-1;
+        //Предохранение от неточностей расчета
+        if (Sin_Dolgota_Zenitn_Tochki > 1)  Sin_Dolgota_Zenitn_Tochki=1;
+        if (Sin_Dolgota_Zenitn_Tochki < -1) Sin_Dolgota_Zenitn_Tochki=-1;
+        if (Cos_Dolgota_Zenitn_Tochki > 1) Cos_Dolgota_Zenitn_Tochki=1;
+        if (Cos_Dolgota_Zenitn_Tochki < -1) Cos_Dolgota_Zenitn_Tochki=-1;
 
         //Определение квадранта, в котором находится Зенитна точка
         //в неподвижной системе координат
@@ -218,8 +221,22 @@ public class MathModel implements IMathModel {
         Zga = r * Math.sin(u) * Math.sin(iRad);
     }
 
+    //проверка соответствуют ли расчитанные параметры, времени которое необходимо и пересчет при необходимости
+
+    private void pereschetParametersIsNeed (int t) {
+        if (this.t==t)
+            return;
+        flyModel(t);
+    }
+
+    //округление любого числа
+    private double okrug(double value, int n) {
+        return (Math.rint(Math.pow(10, n) * value) / Math.pow(10, n));
+    }
+
     @Override
-    public boolean isInTheSun() {
+    public boolean isInTheSun(int t) {
+        pereschetParametersIsNeed(t);
         rashetEdVektNapravlNaSolnzVNepodvSistKoord(t);
         double alfa_Ten_Semli = Math.acos(Rz / (Rz + H));  //Определение центрального угла для КА, находящегося на границе тени Ранее была ошибка (Науменко) arcsin(Rs/(Rs+H));
         double Shirota_Zentra_Teti = -shirotaZenitnTochki; //Определение широты центра теневого пятна
@@ -236,62 +253,77 @@ public class MathModel implements IMathModel {
                 < alfa_Ten_Semli;
     }
 
-    //округление любого числа
-    private double okrug(double value, int n) {
-        return (Math.rint(Math.pow(10, n) * value) / Math.pow(10, n));
-    }
-
-
     @Override
-    public double getW() {
+    public double getW(int t) {
+        pereschetParametersIsNeed(t);
         return W;
     }
 
     @Override
-    public double getTeta() {
+    public double getTeta(int t) {
+        pereschetParametersIsNeed(t);
         return tetaSmall;
     }
 
     @Override
-    public double getFi() {
+    public double getFi(int t) {
+        pereschetParametersIsNeed(t);
         return fi;
     }
 
     @Override
-    public double getLambda() {
+    public double getLambda(int t) {
+        pereschetParametersIsNeed(t);
         return Math.asin(sinlambda);
     }
 
     @Override
-    public double getSinlambda() {
+    public double getSinlambda(int t) {
+        pereschetParametersIsNeed(t);
         return sinlambda;
     }
 
     @Override
-    public double getCoslambda() {
+    public double getCoslambda(int t) {
+        pereschetParametersIsNeed(t);
         return coslambda;
     }
 
     @Override
-    public int getNcoil() {
-        return Ncoil;
+    public int getNcoil(int t) {
+        return (int)(t/Tzv);
     }
 
     @Override
-    public String toString() {
+    public String getMainParameters(int t) {
+        pereschetParametersIsNeed(t);
         return "Арг.Пер.= " + okrug(W, 7) +
                 "\nУг.ист.ан.= " + okrug(tetaSmall, 4) +
                 "\nШирота= " + okrug(fi, 4) +
-                "\nДолгота= " + okrug(getLambda(), 4) +
+                "\nДолгота= " + okrug(getLambda(t), 4) +
                 "\nsinLambda= " + okrug(sinlambda, 4) +
                 "\ncosLambda= " + okrug(coslambda, 4);
     }
 
-    public String getOtheParameters () {
+    @Override
+    public String getOtheParameters (int t) {
+        pereschetParametersIsNeed(t);
         koordKAxyzGa();
-        return "Коорд. КА в абс. геоцентр. СК"
-                +"\nX=" + Xga
-                +"\nY=" + Yga
-                +"\nZ=" + Zga;
+        StringBuilder info = new StringBuilder("Коорд. КА в абс. геоцентр. СК"
+                + "\nX=" + Xga
+                + "\nY=" + Yga
+                + "\nZ=" + Zga);
+        if (isInTheSun(t)){
+            info.append("\nКА на солнце");
+        }else {
+            info.append("\nКА в тени");
+        }
+            return info.toString();
+    }
+
+    @Override
+    public String getTimingFlyght(int t) {
+        return ("Timing:\n"+ timeFlight.getAllTime(t)+
+                "\nCOIL: " + getNcoil(t));
     }
 }

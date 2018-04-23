@@ -1,6 +1,6 @@
 package UIRS.flightSimulation.program1.MathModel;
 
-public class TimeFlight implements ITimeFlight {
+public class ImplTimeFlight implements ITimeFlight {
 
 
 
@@ -17,21 +17,7 @@ public class TimeFlight implements ITimeFlight {
     }
 
     @Override
-    public void addCoil(int value) {
-        TypeTime.COIL.setValue(TypeTime.COIL.getValue()+value);
-    }
-
-    public void setCoil (int value) {
-        TypeTime.COIL.setValue(value);
-    }
-
-    @Override
-    public void setTimePlot(TypeTime timePlot, int value) {
-        timePlot.setValue(value);
-    }
-
-    @Override
-    public int getTimePlot(TypeTime typeTime) {
+    public int getTime(TypeTime typeTime) {
         return typeTime.getValue();
     }
 
@@ -51,8 +37,13 @@ public class TimeFlight implements ITimeFlight {
         return getStringTime(TypeTime.SEC)+"\n"
                 +getStringTime(TypeTime.MIN)+"\n"
                 +getStringTime(TypeTime.HOUR)+"\n"
-                +getStringTime(TypeTime.DAY)+"\n"
-                +getStringTime(TypeTime.COIL);
+                +getStringTime(TypeTime.DAY);
+    }
+
+    @Override
+    public String getAllTime(int t) {
+        setSecond(t);
+        return toString();
     }
 
     private void refreshAllTime(){

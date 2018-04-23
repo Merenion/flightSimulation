@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="eee" prefHeight="623.0" prefWidth="911.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.program1.SimulationFlight">
+<AnchorPane fx:id="eee" prefHeight="623.0" prefWidth="911.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.program1.ControllerSimulation">
   <children>
     <ImageView id="KartaZifr2.png" fitHeight="456.0" fitWidth="900.0" layoutX="6.0" layoutY="160.0" visible="true">
       <image>
@@ -40,7 +40,7 @@
                   </effect>
                 </TextArea>
                 <Button layoutX="14.0" layoutY="10.0" mnemonicParsing="false" onAction="#onStart" prefHeight="30.0" prefWidth="65.0" text="Пуск" />
-                <Button fx:id="iBtStop" layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#onStop" prefHeight="30.0" prefWidth="65.0" text="Стоп" />
+                <Button fx:id="iBtStop" layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#onStopOrResome" prefHeight="30.0" prefWidth="65.0" text="Стоп" />
                 <Button layoutX="14.0" layoutY="90.0" mnemonicParsing="false" onAction="#onBack" prefHeight="30.0" prefWidth="65.00009999999747" text="Назад" />
                 <CheckBox fx:id="idIsTheSun" layoutX="410.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCheckSun" text="Is the sun" textFill="BLACK">
                   <effect>

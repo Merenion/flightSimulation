@@ -1,6 +1,8 @@
 package UIRS.flightSimulation.program1;
 
 public class InitialCharacteristics {
+    /**класс для хранения входных параметров полученных с формы характереистик, является singletonOM
+     * так же в этом реализован паттерн подобный builderУ*/
 
     private static InitialCharacteristics singleton;
 

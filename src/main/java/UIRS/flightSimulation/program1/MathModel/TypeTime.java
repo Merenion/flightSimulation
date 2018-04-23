@@ -1,7 +1,7 @@
 package UIRS.flightSimulation.program1.MathModel;
 
 enum TypeTime {
-    SEC, MIN, HOUR, COIL, DAY;
+    SEC, MIN, HOUR, DAY;
 
     int value;
 

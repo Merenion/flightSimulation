@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Vector;
+
 public class Main extends Application{
 
 
@@ -20,6 +22,5 @@ public class Main extends Application{
         Scene scene = new Scene(root,215,277);
         primaryStage.setScene(scene);
         primaryStage.show();
-
     }
 }

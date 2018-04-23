@@ -1,6 +1,5 @@
 package UIRS.flightSimulation.program1;
 
-import UIRS.flightSimulation.program1.MathModel.MathModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +11,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class CharacteristicsForm {
+public class ControllerCharacteristics {
 
     //450,228,2.4,2.4
 

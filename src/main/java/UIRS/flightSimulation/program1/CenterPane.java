@@ -4,10 +4,10 @@ import javafx.scene.layout.Pane;
 
 public class CenterPane {
 
-    private double x0i;     //центр по X
-    private double y0i;     //центр по Y
-    private double mX;      //массштаб по X
-    private double mY;      //массштаб по Y
+    private double x0i = 450;             //центр по X
+    private double y0i = 228;             //центр по Y
+    private double mX = 2.7;        //массштаб по X
+    private double mY = 2.7;        //массштаб по Y
 
     public CenterPane(double x0i, double y0i, double mX, double mY) {
         this.x0i = x0i;
@@ -17,10 +17,16 @@ public class CenterPane {
     }
 
     public CenterPane(Pane pane, double mX, double mY) {
-        this.x0i = pane.getWidth()/2;
-        this.y0i = pane.getHeight()/2;
+        this.x0i = pane.getLayoutX() / 2;
+        this.y0i = pane.getLayoutY() / 2;
         this.mX = mX;
         this.mY = mY;
+    }
+
+    public CenterPane(Pane pane) {
+        this.x0i = pane.getLayoutX() / 2;
+        this.y0i = pane.getLayoutY() / 2;
+
     }
 
     public double getX0i() {

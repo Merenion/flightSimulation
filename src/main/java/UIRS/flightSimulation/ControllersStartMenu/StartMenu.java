@@ -1,6 +1,5 @@
 package UIRS.flightSimulation.ControllersStartMenu;
 
-import UIRS.flightSimulation.TestMain;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

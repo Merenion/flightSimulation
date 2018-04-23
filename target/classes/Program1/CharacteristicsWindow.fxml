@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.program1.CharacteristicsForm">
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="UIRS.flightSimulation.program1.ControllerCharacteristics">
   <children>
     <TabPane layoutX="0.0" layoutY="0.0" prefHeight="527.0" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
@@ -25,12 +25,6 @@
                 <Label layoutX="109.0" layoutY="113.0" text="Угол наклона плоскости орбиты, град" />
                 <Label layoutX="109.0" layoutY="145.0" text="Долгота восходящего узла,град" />
                 <Label layoutX="109.0" layoutY="178.0" text="Начальный аргумент перигея, град" />
-                <RadioButton id="radioButtonOrbit" fx:id="radioButtonCircleOrbit" layoutX="40.0" layoutY="216.0" mnemonicParsing="false" selected="true" text="Круговая орбита">
-                  <toggleGroup>
-                    <ToggleGroup fx:id="tgOrbit" />
-                  </toggleGroup>
-                </RadioButton>
-                <RadioButton layoutX="182.0" layoutY="216.0" mnemonicParsing="false" selected="false" text="Элиптическая орбита" toggleGroup="$tgOrbit" />
               </children>
             </AnchorPane>
           </content>
