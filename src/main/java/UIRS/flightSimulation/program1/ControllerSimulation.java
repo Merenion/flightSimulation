@@ -1,7 +1,5 @@
 package UIRS.flightSimulation.program1;
 
-import UIRS.flightSimulation.program1.MathModel.*;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,27 +12,25 @@ import javafx.scene.paint.Color;
 public class ControllerSimulation {
 
     @FXML
-    public Button iBtStop;
+    public Button iBtStopResume;                    //кнопка остановки и возобновления
     @FXML
-    public TextArea idOtherParametersFastSimulate;
+    public TextArea idOtherParametersForm2;         //текстовое поле Дполнительных параметров (расположенно на 2 вкладке)
     @FXML
-    public TextArea idMainParametersFastSimulate;
+    public TextArea idMainParametersForm2;          //текстовое поле основных параметров (расположенно на 2 вкладке)
     @FXML
-    public TextArea idTimingFastSimulate;
+    public TextArea idTimingForm2;                  //текстовое поле времени(расположенно на 2 вкладке)
     @FXML
-    public CheckBox idTripPath;
+    public CheckBox idTripPath;                     //check обрезать или нет, хвост трассы (расположенно на 2 вкладке)
     @FXML
-    public TextField idLbTimeFastDraw;
+    public TextField idLbTimeFastDraw;              //текстовая строка ввода времени (расположенно на 2 вкладке)
     @FXML
-    public Button idBtGetParInTime;
+    public CheckBox idIsTheSun;                     //check отображать ли при прорисовке, места полета КА на солнца
     @FXML
-    public CheckBox idIsTheSun;
+    public TextArea idParametersForm1;              //текстовое поле параметров (расположенно на 1 вкладке)
     @FXML
-    public TextArea idParameters;
+    public TextArea idTimingForm1;                  //текстовое поле тайминга (расположенно на 1 вкладке)
     @FXML
-    public TextArea idAreaTimeOfLight;
-    @FXML
-    public Pane idPane;
+    public Pane idPane;                             //поле на котором отображается симуляция
 
     private ISimulationFlight simulationFlight;
     private IDraw draw;
@@ -47,34 +43,38 @@ public class ControllerSimulation {
         writer = new ImplWriter();
     }
 
+    /**экшен кнопки старт -запустить симуляцию*/
     @FXML
     public void onStart(ActionEvent actionEvent) {
         idPane.getChildren().clear();
-        simulationFlight.startNewSimulation(idPane,idIsTheSun,idAreaTimeOfLight,idParameters);
+        simulationFlight.startNewSimulation(idPane,idIsTheSun, idTimingForm1, idParametersForm1);
     }
 
+    /**экшен кнопки стоп - остановить или возобновить симуляцию*/
     @FXML
     public void onStopOrResome(ActionEvent actionEvent) throws InterruptedException {
         if (simulationFlight.isRunSimulation()){
             simulationFlight.stopSimulation();
-            iBtStop.setText("Возобновить");
+            iBtStopResume.setText("Возобновить");
         }else {
             simulationFlight.resumeSimulation();
-            iBtStop.setText("Cтоп");
+            iBtStopResume.setText("Cтоп");
         }
 
     }
 
-    //этой кнопкой запускаем выше созданный поток (кнопка на форме назад) сделал так просто чтоб поэкспериментировать
+    /**экшен кнопки назад - вернуться на форму характеристик*/
     @FXML
     public void onBack(ActionEvent actionEvent) {
     }
 
+    /**экшенен idIsTheSum - задает текст и цвет*/
     @FXML
     public void onCheckSun(ActionEvent actionEvent) {
         idIsTheSun.setText("In The Sun");
         idIsTheSun.setTextFill(Color.BLACK);
     }
+
 
     @FXML
     public void onBtFastSimulation(ActionEvent actionEvent) {
@@ -84,9 +84,9 @@ public class ControllerSimulation {
         idPane.getChildren().add(draw.getPathTrack(t,idTripPath.isSelected()));
         idPane.getChildren().add(draw.getPoint(t,Color.RED,8));
         idPane.getChildren().add(draw.getPoint(t,Color.BLUE,3));
-        idTimingFastSimulate.setText(writer.getTiming(t));
-        idMainParametersFastSimulate.setText(writer.getMainParameters(t));
-        idOtherParametersFastSimulate.setText(writer.getOtheParamerers(t));
+        idTimingForm2.setText(writer.getTiming(t));
+        idMainParametersForm2.setText(writer.getMainParameters(t));
+        idOtherParametersForm2.setText(writer.getOtheParamerers(t));
 
     }
 }
